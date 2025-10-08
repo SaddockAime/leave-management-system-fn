@@ -115,3 +115,83 @@ export interface PaginatedResponse<T> {
   data: T[];
   pagination: PaginationMeta;
 }
+
+// User Management Types
+export interface UserListItem {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  role: UserRole;
+  status: UserStatus;
+  profilePicture?: string;
+  lastLogin?: string;
+  createdAt: string;
+  employeeId: string | null;
+  department: string;
+  position: string;
+  hasEmployeeRecord: boolean;
+}
+
+export interface UpdateUserRoleRequest {
+  roleIds: string[];
+}
+
+export interface UpdateUserStatusRequest {
+  status: UserStatus;
+}
+
+// Employee Management Types
+export interface Employee {
+  id: string;
+  user: {
+    id: string;
+    email: string;
+    firstName: string;
+    lastName: string;
+    profilePicture?: string;
+  };
+  position: string;
+  hireDate: string;
+  status: string;
+  department: {
+    id: string;
+    name: string;
+  };
+  manager?: {
+    id: string;
+    user: {
+      firstName: string;
+      lastName: string;
+    };
+  };
+}
+
+export interface CreateEmployeeRequest {
+  userId: string;
+  position: string;
+  departmentId: string;
+  hireDate?: string;
+  managerId?: string;
+}
+
+export interface UpdateEmployeeRequest {
+  position?: string;
+  departmentId?: string;
+  managerId?: string;
+  status?: string;
+}
+
+export interface Department {
+  id: string;
+  name: string;
+  description: string;
+  managerId?: string;
+  manager?: {
+    id: string;
+    user: {
+      firstName: string;
+      lastName: string;
+    };
+  };
+}
