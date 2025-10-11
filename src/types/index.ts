@@ -194,4 +194,19 @@ export interface Department {
       lastName: string;
     };
   };
+  employees?: Employee[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateDepartmentRequest {
+  name: string;
+  description?: string;
+  managerId?: string;
+}
+
+export interface UpdateDepartmentRequest {
+  name?: string;
+  description?: string;
+  managerId?: string;
 }

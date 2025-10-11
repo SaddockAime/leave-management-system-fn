@@ -36,7 +36,7 @@ const InfoItem = ({
   badge?: React.ReactNode;
 }) => (
   <Card>
-    <CardContent className="pt-6">
+    <CardContent>
       <div className="flex items-start space-x-3">
         <Icon className="text-muted-foreground mt-0.5 h-5 w-5" />
         <div className="flex-1">
