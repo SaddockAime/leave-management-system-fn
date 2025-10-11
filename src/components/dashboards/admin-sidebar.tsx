@@ -17,20 +17,22 @@ import {
   Settings,
   UserCog,
   Bell,
+  Tag,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard/admin', icon: LayoutDashboard },
+  { name: 'User Management', href: '/dashboard/admin/users', icon: Shield },
   { name: 'Employees', href: '/dashboard/admin/employees', icon: Users },
   { name: 'Departments', href: '/dashboard/admin/departments', icon: Building2 },
-  { name: 'Leave Requests', href: '/dashboard/admin/leaves', icon: Calendar },
+  { name: 'Leave Types', href: '/dashboard/admin/leave-types', icon: Tag },
+  { name: 'Leave Requests', href: '/dashboard/admin/leave-requests', icon: Calendar },
   { name: 'Recruitment', href: '/dashboard/admin/recruitment', icon: UserPlus },
   { name: 'Onboarding', href: '/dashboard/admin/onboarding', icon: Briefcase },
   { name: 'Compensation', href: '/dashboard/admin/compensation', icon: DollarSign },
   { name: 'Analytics', href: '/dashboard/admin/analytics', icon: BarChart3 },
   { name: 'Reports', href: '/dashboard/admin/reports', icon: FileText },
-  { name: 'User Management', href: '/dashboard/admin/users', icon: Shield },
   { name: 'Audit Logs', href: '/dashboard/admin/audit', icon: ClipboardList },
   { name: 'Settings', href: '/dashboard/admin/settings', icon: Settings },
   { name: 'My Profile', href: '/dashboard/admin/profile', icon: UserCog },

@@ -210,3 +210,88 @@ export interface UpdateDepartmentRequest {
   description?: string;
   managerId?: string;
 }
+
+// Leave Management Types
+export interface LeaveType {
+  id: string;
+  name: string;
+  description?: string;
+  defaultDays: number;
+  color?: string;
+  active: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CreateLeaveTypeRequest {
+  name: string;
+  description?: string;
+  defaultDays: number;
+  color?: string;
+  active?: boolean;
+}
+
+export interface UpdateLeaveTypeRequest {
+  name?: string;
+  description?: string;
+  defaultDays?: number;
+  color?: string;
+  active?: boolean;
+}
+
+export type LeaveRequestStatus = 'PENDING' | 'APPROVED' | 'REJECTED' | 'CANCELLED';
+
+export interface LeaveRequest {
+  id: string;
+  employee: {
+    id: string;
+    user: {
+      firstName: string;
+      lastName: string;
+      email: string;
+    };
+    department?: {
+      id: string;
+      name: string;
+    };
+  };
+  leaveType: LeaveType;
+  startDate: string;
+  endDate: string;
+  reason: string;
+  status: LeaveRequestStatus;
+  numberOfDays: number;
+  approvedBy?: string;
+  rejectedBy?: string;
+  cancelledBy?: string;
+  approverComments?: string;
+  rejectionReason?: string;
+  cancellationReason?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateLeaveRequestRequest {
+  leaveTypeId: string;
+  startDate: string;
+  endDate: string;
+  reason: string;
+}
+
+export interface UpdateLeaveRequestRequest {
+  startDate?: string;
+  endDate?: string;
+  reason?: string;
+}
+
+export interface ApproveLeaveRequest {
+  comments?: string;
+}
+
+export interface RejectLeaveRequest {
+  reason: string;
+}
+
+export interface CancelLeaveRequest {
+  reason?: string;
+}

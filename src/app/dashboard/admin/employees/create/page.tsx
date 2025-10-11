@@ -2,10 +2,13 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigation } from '@/hooks/use-navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { employeesApi } from '@/lib/api/employees';
 import { departmentsApi } from '@/lib/api/departments';
 import { usersApi } from '@/lib/api/users';
-import type { Department, UserListItem, CreateEmployeeRequest, Employee } from '@/types';
+import { createEmployeeSchema, type CreateEmployeeFormData } from '@/schemas/employee';
+import type { Department, UserListItem, Employee } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -27,15 +30,25 @@ export default function CreateEmployeePage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState<CreateEmployeeRequest>({
-    userId: '',
-    position: '',
-    departmentId: '',
-    hireDate: new Date().toISOString().split('T')[0],
-    managerId: '',
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<CreateEmployeeFormData>({
+    resolver: zodResolver(createEmployeeSchema),
+    defaultValues: {
+      userId: '',
+      position: 'EMPLOYEE',
+      departmentId: '',
+      hireDate: new Date().toISOString().split('T')[0],
+      managerId: '',
+    },
   });
+
+  const formData = watch();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -69,28 +82,23 @@ export default function CreateEmployeePage() {
     fetchData();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    // Validation
-    if (!formData.userId || !formData.position || !formData.departmentId) {
-      setError('Please fill all required fields');
-      return;
-    }
-
+  const onSubmit = async (data: CreateEmployeeFormData) => {
     setSubmitting(true);
     try {
-      const response = await employeesApi.createEmployee(formData);
+      const submitData = {
+        ...data,
+        managerId: data.managerId === 'no-manager' || !data.managerId ? undefined : data.managerId,
+      };
+      const response = await employeesApi.createEmployee(submitData);
       if (response.success) {
         toast.success('Employee profile created successfully');
         navigation.push('/dashboard/admin/employees');
       } else {
-        setError(response.message || 'Failed to create employee profile');
+        toast.error(response.message || 'Failed to create employee profile');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create employee profile';
-      setError(errorMessage);
+      toast.error(errorMessage);
       console.error('Error creating employee:', err);
     } finally {
       setSubmitting(false);
@@ -138,7 +146,7 @@ export default function CreateEmployeePage() {
       )}
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid gap-6 lg:grid-cols-2">
           {/* User & Position */}
           <Card>
@@ -150,17 +158,11 @@ export default function CreateEmployeePage() {
               <CardDescription>Select the user and assign their position</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {error && (
-                <div className="bg-destructive/10 text-destructive rounded-md p-3 text-sm">
-                  {error}
-                </div>
-              )}
-
               <div className="space-y-2">
                 <Label htmlFor="userId">Select User (Guest) *</Label>
                 <Select
                   value={formData.userId}
-                  onValueChange={(value) => setFormData({ ...formData, userId: value })}
+                  onValueChange={(value) => setValue('userId', value)}
                 >
                   <SelectTrigger id="userId">
                     <SelectValue placeholder="Select a guest user" />
@@ -179,6 +181,9 @@ export default function CreateEmployeePage() {
                     )}
                   </SelectContent>
                 </Select>
+                {errors.userId && (
+                  <p className="text-destructive text-sm">{errors.userId.message}</p>
+                )}
                 <p className="text-muted-foreground text-xs">
                   Only users with GUEST role and no employee profile are shown
                 </p>
@@ -188,7 +193,9 @@ export default function CreateEmployeePage() {
                 <Label htmlFor="position">Position *</Label>
                 <Select
                   value={formData.position}
-                  onValueChange={(value) => setFormData({ ...formData, position: value })}
+                  onValueChange={(value) =>
+                    setValue('position', value as 'EMPLOYEE' | 'MANAGER' | 'HR_MANAGER' | 'ADMIN')
+                  }
                 >
                   <SelectTrigger id="position">
                     <SelectValue placeholder="Select position" />
@@ -200,6 +207,9 @@ export default function CreateEmployeePage() {
                     <SelectItem value="ADMIN">Admin</SelectItem>
                   </SelectContent>
                 </Select>
+                {errors.position && (
+                  <p className="text-destructive text-sm">{errors.position.message}</p>
+                )}
                 <p className="text-muted-foreground text-xs">
                   The user&apos;s role will be updated to EMPLOYEE after profile creation
                 </p>
@@ -210,10 +220,12 @@ export default function CreateEmployeePage() {
                 <Input
                   id="hireDate"
                   type="date"
-                  value={formData.hireDate}
-                  onChange={(e) => setFormData({ ...formData, hireDate: e.target.value })}
+                  {...register('hireDate')}
                   max={new Date().toISOString().split('T')[0]}
                 />
+                {errors.hireDate && (
+                  <p className="text-destructive text-sm">{errors.hireDate.message}</p>
+                )}
                 <p className="text-muted-foreground text-xs">
                   Date when the employee joined the organization
                 </p>
@@ -232,7 +244,7 @@ export default function CreateEmployeePage() {
                 <Label htmlFor="departmentId">Department *</Label>
                 <Select
                   value={formData.departmentId}
-                  onValueChange={(value) => setFormData({ ...formData, departmentId: value })}
+                  onValueChange={(value) => setValue('departmentId', value)}
                 >
                   <SelectTrigger id="departmentId">
                     <SelectValue placeholder="Select department" />
@@ -251,6 +263,9 @@ export default function CreateEmployeePage() {
                     )}
                   </SelectContent>
                 </Select>
+                {errors.departmentId && (
+                  <p className="text-destructive text-sm">{errors.departmentId.message}</p>
+                )}
                 <p className="text-muted-foreground text-xs">
                   The department this employee will belong to
                 </p>
@@ -261,7 +276,7 @@ export default function CreateEmployeePage() {
                 <Select
                   value={formData.managerId || 'no-manager'}
                   onValueChange={(value) =>
-                    setFormData({ ...formData, managerId: value === 'no-manager' ? '' : value })
+                    setValue('managerId', value === 'no-manager' ? '' : value)
                   }
                 >
                   <SelectTrigger id="managerId">
@@ -282,6 +297,9 @@ export default function CreateEmployeePage() {
                     )}
                   </SelectContent>
                 </Select>
+                {errors.managerId && (
+                  <p className="text-destructive text-sm">{errors.managerId.message}</p>
+                )}
                 <p className="text-muted-foreground text-xs">
                   The direct manager this employee will report to
                 </p>

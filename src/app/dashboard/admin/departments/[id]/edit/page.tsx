@@ -3,9 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useNavigation } from '@/hooks/use-navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { departmentsApi } from '@/lib/api/departments';
 import { employeesApi } from '@/lib/api/employees';
-import type { Department, Employee, UpdateDepartmentRequest } from '@/types';
+import { updateDepartmentSchema, type UpdateDepartmentFormData } from '@/schemas/department';
+import type { Department, Employee } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -29,11 +32,22 @@ export default function EditDepartmentPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const [formData, setFormData] = useState<UpdateDepartmentRequest>({
-    name: '',
-    description: '',
-    managerId: '',
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<UpdateDepartmentFormData>({
+    resolver: zodResolver(updateDepartmentSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+      managerId: '',
+    },
   });
+
+  const formData = watch();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,11 +68,9 @@ export default function EditDepartmentPage() {
 
         if (departmentData) {
           setDepartment(departmentData);
-          setFormData({
-            name: departmentData.name,
-            description: departmentData.description || '',
-            managerId: departmentData.managerId || '',
-          });
+          setValue('name', departmentData.name);
+          setValue('description', departmentData.description || '');
+          setValue('managerId', departmentData.managerId || '');
         }
 
         // Handle employees response
@@ -78,14 +90,14 @@ export default function EditDepartmentPage() {
     if (params.id) {
       fetchData();
     }
-  }, [params.id]);
+  }, [params.id, setValue]);
 
-  const handleSave = async () => {
+  const onSubmit = async (data: UpdateDepartmentFormData) => {
     setSaving(true);
     try {
       const submitData = {
-        ...formData,
-        managerId: formData.managerId === 'no-manager' ? undefined : formData.managerId,
+        ...data,
+        managerId: data.managerId === 'no-manager' || !data.managerId ? undefined : data.managerId,
       };
 
       const response = await departmentsApi.updateDepartment(params.id as string, submitData);
@@ -154,7 +166,7 @@ export default function EditDepartmentPage() {
             Update department information for {department.name}
           </p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="cursor-pointer">
+        <Button onClick={handleSubmit(onSubmit)} disabled={saving} className="cursor-pointer">
           {saving ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -180,10 +192,9 @@ export default function EditDepartmentPage() {
             <Input
               id="name"
               placeholder="e.g., Engineering, Marketing, Sales"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              required
+              {...register('name')}
             />
+            {errors.name && <p className="text-destructive text-sm">{errors.name.message}</p>}
             <p className="text-muted-foreground text-xs">The official name of the department</p>
           </div>
 
@@ -192,10 +203,12 @@ export default function EditDepartmentPage() {
             <Textarea
               id="description"
               placeholder="Enter department description..."
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={4}
+              {...register('description')}
             />
+            {errors.description && (
+              <p className="text-destructive text-sm">{errors.description.message}</p>
+            )}
             <p className="text-muted-foreground text-xs">
               A brief description of the department&apos;s purpose and responsibilities
             </p>
@@ -205,9 +218,7 @@ export default function EditDepartmentPage() {
             <Label htmlFor="managerId">Department Manager (Optional)</Label>
             <Select
               value={formData.managerId || 'no-manager'}
-              onValueChange={(value) =>
-                setFormData({ ...formData, managerId: value === 'no-manager' ? '' : value })
-              }
+              onValueChange={(value) => setValue('managerId', value === 'no-manager' ? '' : value)}
             >
               <SelectTrigger id="managerId">
                 <SelectValue placeholder="Select a manager" />
@@ -227,6 +238,9 @@ export default function EditDepartmentPage() {
                 )}
               </SelectContent>
             </Select>
+            {errors.managerId && (
+              <p className="text-destructive text-sm">{errors.managerId.message}</p>
+            )}
             <p className="text-muted-foreground text-xs">
               The employee who will manage this department
             </p>

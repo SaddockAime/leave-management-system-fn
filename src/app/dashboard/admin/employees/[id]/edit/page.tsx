@@ -3,9 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useNavigation } from '@/hooks/use-navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { employeesApi } from '@/lib/api/employees';
 import { departmentsApi } from '@/lib/api/departments';
-import type { Employee, Department, UpdateEmployeeRequest } from '@/types';
+import { updateEmployeeSchema, type UpdateEmployeeFormData } from '@/schemas/employee';
+import type { Employee, Department } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -29,12 +32,16 @@ export default function EditEmployeePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  const [formData, setFormData] = useState<UpdateEmployeeRequest>({
-    position: '',
-    departmentId: '',
-    managerId: '',
-    status: '',
+  const {
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<UpdateEmployeeFormData>({
+    resolver: zodResolver(updateEmployeeSchema),
   });
+
+  const formData = watch();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -56,12 +63,16 @@ export default function EditEmployeePage() {
 
         if (employeeData) {
           setEmployee(employeeData);
-          setFormData({
-            position: employeeData.position,
-            departmentId: employeeData.department.id,
-            managerId: employeeData.manager?.id || '',
-            status: employeeData.status,
-          });
+          setValue(
+            'position',
+            employeeData.position as 'EMPLOYEE' | 'MANAGER' | 'HR_MANAGER' | 'ADMIN'
+          );
+          setValue('departmentId', employeeData.department.id);
+          setValue('managerId', employeeData.manager?.id || '');
+          setValue(
+            'status',
+            employeeData.status as 'ACTIVE' | 'INACTIVE' | 'ON_LEAVE' | 'TERMINATED'
+          );
         }
 
         // Handle departments response
@@ -88,12 +99,16 @@ export default function EditEmployeePage() {
     if (params.id) {
       fetchData();
     }
-  }, [params.id]);
+  }, [params.id, setValue]);
 
-  const handleSave = async () => {
+  const onSubmit = async (data: UpdateEmployeeFormData) => {
     setSaving(true);
     try {
-      const response = await employeesApi.updateEmployee(params.id as string, formData);
+      const submitData = {
+        ...data,
+        managerId: data.managerId === 'no-manager' || !data.managerId ? undefined : data.managerId,
+      };
+      const response = await employeesApi.updateEmployee(params.id as string, submitData);
       if (response.success) {
         toast.success('Employee updated successfully');
         navigation.push('/dashboard/admin/employees');
@@ -158,7 +173,7 @@ export default function EditEmployeePage() {
             Update employee information for {employee.user.firstName} {employee.user.lastName}
           </p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="cursor-pointer">
+        <Button onClick={handleSubmit(onSubmit)} disabled={saving} className="cursor-pointer">
           {saving ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -203,7 +218,9 @@ export default function EditEmployeePage() {
               <Label htmlFor="position">Position *</Label>
               <Select
                 value={formData.position}
-                onValueChange={(value) => setFormData({ ...formData, position: value })}
+                onValueChange={(value) =>
+                  setValue('position', value as 'EMPLOYEE' | 'MANAGER' | 'HR_MANAGER' | 'ADMIN')
+                }
               >
                 <SelectTrigger id="position">
                   <SelectValue placeholder="Select position" />
@@ -215,13 +232,18 @@ export default function EditEmployeePage() {
                   <SelectItem value="ADMIN">Admin</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.position && (
+                <p className="text-destructive text-sm">{errors.position.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="status">Status *</Label>
               <Select
                 value={formData.status}
-                onValueChange={(value) => setFormData({ ...formData, status: value })}
+                onValueChange={(value) =>
+                  setValue('status', value as 'ACTIVE' | 'INACTIVE' | 'ON_LEAVE' | 'TERMINATED')
+                }
               >
                 <SelectTrigger id="status">
                   <SelectValue placeholder="Select status" />
@@ -230,8 +252,10 @@ export default function EditEmployeePage() {
                   <SelectItem value="ACTIVE">Active</SelectItem>
                   <SelectItem value="INACTIVE">Inactive</SelectItem>
                   <SelectItem value="ON_LEAVE">On Leave</SelectItem>
+                  <SelectItem value="TERMINATED">Terminated</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.status && <p className="text-destructive text-sm">{errors.status.message}</p>}
             </div>
           </CardContent>
         </Card>
@@ -247,7 +271,7 @@ export default function EditEmployeePage() {
               <Label htmlFor="departmentId">Department *</Label>
               <Select
                 value={formData.departmentId}
-                onValueChange={(value) => setFormData({ ...formData, departmentId: value })}
+                onValueChange={(value) => setValue('departmentId', value)}
               >
                 <SelectTrigger id="departmentId">
                   <SelectValue placeholder="Select department" />
@@ -260,6 +284,9 @@ export default function EditEmployeePage() {
                   ))}
                 </SelectContent>
               </Select>
+              {errors.departmentId && (
+                <p className="text-destructive text-sm">{errors.departmentId.message}</p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -267,7 +294,7 @@ export default function EditEmployeePage() {
               <Select
                 value={formData.managerId || 'no-manager'}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, managerId: value === 'no-manager' ? '' : value })
+                  setValue('managerId', value === 'no-manager' ? '' : value)
                 }
               >
                 <SelectTrigger id="managerId">
@@ -282,6 +309,9 @@ export default function EditEmployeePage() {
                   ))}
                 </SelectContent>
               </Select>
+              {errors.managerId && (
+                <p className="text-destructive text-sm">{errors.managerId.message}</p>
+              )}
             </div>
 
             <div className="bg-muted rounded-md p-4">

@@ -2,9 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigation } from '@/hooks/use-navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { departmentsApi } from '@/lib/api/departments';
 import { employeesApi } from '@/lib/api/employees';
-import type { CreateDepartmentRequest, Employee } from '@/types';
+import { createDepartmentSchema, type CreateDepartmentFormData } from '@/schemas/department';
+import type { Employee } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -25,13 +28,23 @@ export default function CreateDepartmentPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState<CreateDepartmentRequest>({
-    name: '',
-    description: '',
-    managerId: '',
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm<CreateDepartmentFormData>({
+    resolver: zodResolver(createDepartmentSchema),
+    defaultValues: {
+      name: '',
+      description: '',
+      managerId: '',
+    },
   });
+
+  const formData = watch();
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -56,21 +69,12 @@ export default function CreateDepartmentPage() {
     fetchEmployees();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError(null);
-
-    // Validation
-    if (!formData.name.trim()) {
-      setError('Department name is required');
-      return;
-    }
-
+  const onSubmit = async (data: CreateDepartmentFormData) => {
     setSubmitting(true);
     try {
       const submitData = {
-        ...formData,
-        managerId: formData.managerId === 'no-manager' ? undefined : formData.managerId,
+        ...data,
+        managerId: data.managerId === 'no-manager' || !data.managerId ? undefined : data.managerId,
       };
 
       const response = await departmentsApi.createDepartment(submitData);
@@ -78,11 +82,11 @@ export default function CreateDepartmentPage() {
         toast.success('Department created successfully');
         navigation.push('/dashboard/admin/departments');
       } else {
-        setError(response.message || 'Failed to create department');
+        toast.error(response.message || 'Failed to create department');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to create department';
-      setError(errorMessage);
+      toast.error(errorMessage);
       console.error('Error creating department:', err);
     } finally {
       setSubmitting(false);
@@ -111,7 +115,7 @@ export default function CreateDepartmentPage() {
       </div>
 
       {/* Form */}
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -121,21 +125,14 @@ export default function CreateDepartmentPage() {
             <CardDescription>Basic department details</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            {error && (
-              <div className="bg-destructive/10 text-destructive rounded-md p-3 text-sm">
-                {error}
-              </div>
-            )}
-
             <div className="space-y-2">
               <Label htmlFor="name">Department Name *</Label>
               <Input
                 id="name"
                 placeholder="e.g., Engineering, Marketing, Sales"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                required
+                {...register('name')}
               />
+              {errors.name && <p className="text-destructive text-sm">{errors.name.message}</p>}
               <p className="text-muted-foreground text-xs">The official name of the department</p>
             </div>
 
@@ -144,10 +141,12 @@ export default function CreateDepartmentPage() {
               <Textarea
                 id="description"
                 placeholder="Enter department description..."
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={4}
+                {...register('description')}
               />
+              {errors.description && (
+                <p className="text-destructive text-sm">{errors.description.message}</p>
+              )}
               <p className="text-muted-foreground text-xs">
                 A brief description of the department&apos;s purpose and responsibilities
               </p>
@@ -158,7 +157,7 @@ export default function CreateDepartmentPage() {
               <Select
                 value={formData.managerId || 'no-manager'}
                 onValueChange={(value) =>
-                  setFormData({ ...formData, managerId: value === 'no-manager' ? '' : value })
+                  setValue('managerId', value === 'no-manager' ? '' : value)
                 }
               >
                 <SelectTrigger id="managerId">
@@ -179,6 +178,9 @@ export default function CreateDepartmentPage() {
                   )}
                 </SelectContent>
               </Select>
+              {errors.managerId && (
+                <p className="text-destructive text-sm">{errors.managerId.message}</p>
+              )}
               <p className="text-muted-foreground text-xs">
                 The employee who will manage this department
               </p>
