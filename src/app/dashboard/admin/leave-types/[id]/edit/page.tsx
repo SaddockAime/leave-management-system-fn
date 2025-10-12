@@ -109,7 +109,7 @@ export default function EditLeaveTypePage() {
           Back to Leave Types
         </Button>
         <Card>
-          <CardContent className="pt-6">
+          <CardContent>
             <p className="text-muted-foreground text-center">Leave type not found</p>
           </CardContent>
         </Card>

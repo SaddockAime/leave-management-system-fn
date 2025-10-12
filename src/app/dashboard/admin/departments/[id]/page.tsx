@@ -145,7 +145,7 @@ export default function DepartmentViewPage() {
           Back to Departments
         </Button>
         <Card>
-          <CardContent className="pt-6">
+          <CardContent>
             <p className="text-muted-foreground text-center">Department not found</p>
           </CardContent>
         </Card>

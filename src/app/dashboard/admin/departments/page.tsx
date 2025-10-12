@@ -320,7 +320,7 @@ export default function DepartmentsPage() {
             ) : (
               currentDepartments.map((department, index) => (
                 <Card key={department.id}>
-                  <CardContent className="pt-6">
+                  <CardContent>
                     <div className="flex items-start justify-between">
                       <div className="flex-1 space-y-2">
                         <div className="flex items-center gap-2">

@@ -127,7 +127,7 @@ export default function JobPostingViewPage() {
           Back to Recruitment
         </Button>
         <Card>
-          <CardContent className="pt-6">
+          <CardContent>
             <p className="text-muted-foreground text-center">Job posting not found</p>
           </CardContent>
         </Card>

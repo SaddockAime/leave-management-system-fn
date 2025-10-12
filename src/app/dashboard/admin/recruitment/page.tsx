@@ -467,7 +467,7 @@ export default function RecruitmentPage() {
             ) : (
               currentJobPostings.map((job) => (
                 <Card key={job.id}>
-                  <CardContent className="pt-6">
+                  <CardContent>
                     <div className="mb-3 flex items-start justify-between">
                       <div>
                         <h3 className="font-semibold">{job.title}</h3>

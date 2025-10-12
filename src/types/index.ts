@@ -468,3 +468,161 @@ export interface UpdateInterviewRequest {
   feedback?: string;
   rating?: number;
 }
+
+// Onboarding Management Types
+export type OnboardingProcessStatus =
+  | 'NOT_STARTED'
+  | 'IN_PROGRESS'
+  | 'COMPLETED'
+  | 'ON_HOLD'
+  | 'CANCELLED';
+
+export type OnboardingPhase =
+  | 'PRE_BOARDING'
+  | 'FIRST_DAY'
+  | 'FIRST_WEEK'
+  | 'FIRST_MONTH'
+  | 'FIRST_QUARTER';
+
+export type TaskStatus = 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'SKIPPED' | 'ON_HOLD';
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+export type TaskCategory =
+  | 'DOCUMENTATION'
+  | 'TRAINING'
+  | 'EQUIPMENT'
+  | 'ACCESS'
+  | 'ORIENTATION'
+  | 'COMPLIANCE'
+  | 'SOCIAL'
+  | 'OTHER';
+
+export interface OnboardingProcess {
+  id: string;
+  employee: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    position: string;
+    department: {
+      id: string;
+      name: string;
+    };
+  };
+  status: OnboardingProcessStatus;
+  currentPhase: OnboardingPhase;
+  startDate: string;
+  targetCompletionDate?: string;
+  actualCompletionDate?: string;
+  assignedTo?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  notes?: string;
+  goals?: string[];
+  challenges?: string[];
+  feedback?: string;
+  satisfactionRating?: number;
+  improvementSuggestions?: string;
+  isTemplate: boolean;
+  templateName?: string;
+  customFields?: string[];
+  tasks?: OnboardingTask[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OnboardingTask {
+  id: string;
+  onboardingId: string;
+  title: string;
+  description: string;
+  category: TaskCategory;
+  priority: TaskPriority;
+  status: TaskStatus;
+  orderIndex: number;
+  dueDate?: string;
+  completedDate?: string;
+  assignedTo?: string;
+  completedBy?: string;
+  instructions?: string;
+  requiredDocuments?: string[];
+  attachments?: string[];
+  notes?: string;
+  completionNotes?: string;
+  isRequired: boolean;
+  isRecurring: boolean;
+  estimatedDuration?: number;
+  actualDuration?: number;
+  dependencies?: string[];
+  failureReason?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateOnboardingRequest {
+  employeeId: string;
+  startDate: string;
+  targetCompletionDate?: string;
+  assignedToId?: string;
+  notes?: string;
+  goals?: string[];
+  isTemplate?: boolean;
+  templateName?: string;
+}
+
+export interface UpdateOnboardingRequest {
+  status?: OnboardingProcessStatus;
+  currentPhase?: OnboardingPhase;
+  startDate?: string;
+  targetCompletionDate?: string;
+  actualCompletionDate?: string;
+  assignedToId?: string;
+  notes?: string;
+  goals?: string[];
+  challenges?: string[];
+  feedback?: string;
+  satisfactionRating?: number;
+  improvementSuggestions?: string;
+}
+
+export interface CreateOnboardingTaskRequest {
+  onboardingId: string;
+  title: string;
+  description: string;
+  category: TaskCategory;
+  priority: TaskPriority;
+  orderIndex?: number;
+  dueDate?: string;
+  assignedTo?: string;
+  instructions?: string;
+  requiredDocuments?: string[];
+  isRequired?: boolean;
+  isRecurring?: boolean;
+  estimatedDuration?: number;
+  dependencies?: string[];
+}
+
+export interface UpdateOnboardingTaskRequest {
+  title?: string;
+  description?: string;
+  category?: TaskCategory;
+  priority?: TaskPriority;
+  status?: TaskStatus;
+  orderIndex?: number;
+  dueDate?: string;
+  completedDate?: string;
+  assignedTo?: string;
+  completedBy?: string;
+  instructions?: string;
+  requiredDocuments?: string[];
+  attachments?: string[];
+  notes?: string;
+  completionNotes?: string;
+  isRequired?: boolean;
+  estimatedDuration?: number;
+  actualDuration?: number;
+  failureReason?: string;
+}

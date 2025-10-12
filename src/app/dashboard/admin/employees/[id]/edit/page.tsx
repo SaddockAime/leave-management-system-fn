@@ -145,7 +145,7 @@ export default function EditEmployeePage() {
           Back to Employees
         </Button>
         <Card>
-          <CardContent className="pt-6">
+          <CardContent>
             <p className="text-muted-foreground text-center">Employee not found</p>
           </CardContent>
         </Card>

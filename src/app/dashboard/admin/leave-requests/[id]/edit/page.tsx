@@ -122,7 +122,7 @@ export default function EditLeaveRequestPage() {
           Back to Leave Requests
         </Button>
         <Card>
-          <CardContent className="pt-6">
+          <CardContent>
             <p className="text-muted-foreground text-center">Leave request not found</p>
           </CardContent>
         </Card>
@@ -168,7 +168,7 @@ export default function EditLeaveRequestPage() {
 
       {/* Warning Alert */}
       <Card className="border-yellow-200 bg-yellow-50 dark:border-yellow-800 dark:bg-yellow-950">
-        <CardContent className="pt-6">
+        <CardContent>
           <div className="flex gap-3">
             <AlertTriangle className="mt-0.5 h-5 w-5 flex-shrink-0 text-yellow-600 dark:text-yellow-400" />
             <div className="space-y-1">

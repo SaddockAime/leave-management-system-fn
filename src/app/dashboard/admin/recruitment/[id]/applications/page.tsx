@@ -453,7 +453,7 @@ export default function JobApplicationsPage() {
             ) : (
               currentApplications.map((app) => (
                 <Card key={app.id}>
-                  <CardContent className="pt-6">
+                  <CardContent>
                     <div className="mb-3 flex items-start justify-between">
                       <div>
                         <h3 className="font-semibold">

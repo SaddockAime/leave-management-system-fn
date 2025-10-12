@@ -206,7 +206,7 @@ export default function LeaveRequestViewPage() {
           Back to Leave Requests
         </Button>
         <Card>
-          <CardContent className="pt-6">
+          <CardContent>
             <p className="text-muted-foreground text-center">Leave request not found</p>
           </CardContent>
         </Card>
