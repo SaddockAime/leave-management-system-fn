@@ -295,3 +295,176 @@ export interface RejectLeaveRequest {
 export interface CancelLeaveRequest {
   reason?: string;
 }
+
+// Recruitment Management Types
+export type JobPostingStatus = 'DRAFT' | 'PUBLISHED' | 'CLOSED' | 'ARCHIVED';
+export type JobType = 'FULL_TIME' | 'PART_TIME' | 'CONTRACT' | 'INTERNSHIP';
+export type ExperienceLevel = 'ENTRY' | 'JUNIOR' | 'MID' | 'SENIOR' | 'LEAD';
+
+export interface JobPosting {
+  id: string;
+  title: string;
+  description: string;
+  requirements: string[];
+  responsibilities: string[];
+  department: {
+    id: string;
+    name: string;
+  };
+  location: string;
+  type: JobType;
+  experienceLevel: ExperienceLevel;
+  salaryRange?: {
+    min: number;
+    max: number;
+    currency: string;
+  };
+  benefits?: string[];
+  status: JobPostingStatus;
+  applicationDeadline: string;
+  publishedAt?: string;
+  closedAt?: string;
+  createdBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateJobPostingRequest {
+  title: string;
+  description: string;
+  requirements: string[];
+  responsibilities: string[];
+  departmentId: string;
+  location: string;
+  type: JobType;
+  experienceLevel: ExperienceLevel;
+  salaryRange?: {
+    min: number;
+    max: number;
+    currency: string;
+  };
+  benefits?: string[];
+  applicationDeadline: string;
+}
+
+export interface UpdateJobPostingRequest {
+  title?: string;
+  description?: string;
+  requirements?: string[];
+  responsibilities?: string[];
+  departmentId?: string;
+  location?: string;
+  type?: JobType;
+  experienceLevel?: ExperienceLevel;
+  salaryRange?: {
+    min: number;
+    max: number;
+    currency: string;
+  };
+  benefits?: string[];
+  applicationDeadline?: string;
+  status?: JobPostingStatus;
+}
+
+export type ApplicationStatus = 'PENDING' | 'REVIEWING' | 'SHORTLISTED' | 'REJECTED' | 'HIRED';
+
+export interface JobApplication {
+  id: string;
+  jobPosting: {
+    id: string;
+    title: string;
+    department: {
+      id: string;
+      name: string;
+    };
+  };
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  resume: string;
+  coverLetter?: string;
+  experience: number;
+  expectedSalary?: number;
+  availability?: string;
+  status: ApplicationStatus;
+  notes?: string;
+  rating?: number;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateJobApplicationRequest {
+  jobPostingId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  resume: string;
+  coverLetter?: string;
+  experience: number;
+  expectedSalary?: number;
+  availability?: string;
+}
+
+export interface UpdateJobApplicationRequest {
+  status: ApplicationStatus;
+  notes?: string;
+  rating?: number;
+}
+
+export type InterviewStatus = 'SCHEDULED' | 'COMPLETED' | 'CANCELLED' | 'RESCHEDULED';
+export type InterviewType = 'PHONE' | 'VIDEO' | 'ONSITE' | 'TECHNICAL' | 'BEHAVIORAL';
+
+export interface Interview {
+  id: string;
+  jobApplication: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    jobPosting: {
+      id: string;
+      title: string;
+    };
+  };
+  interviewer: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  scheduledDate: string;
+  duration: number;
+  type: InterviewType;
+  location?: string;
+  notes?: string;
+  status: InterviewStatus;
+  feedback?: string;
+  rating?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateInterviewRequest {
+  jobApplicationId: string;
+  interviewerId: string;
+  scheduledDate: string;
+  duration: number;
+  type: InterviewType;
+  location?: string;
+  notes?: string;
+}
+
+export interface UpdateInterviewRequest {
+  scheduledDate?: string;
+  duration?: number;
+  type?: InterviewType;
+  location?: string;
+  notes?: string;
+  status?: InterviewStatus;
+  feedback?: string;
+  rating?: number;
+}

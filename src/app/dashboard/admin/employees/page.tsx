@@ -201,7 +201,7 @@ export default function EmployeesPage() {
       {/* Guest Users Alert */}
       {guestUsers.length > 0 && (
         <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950">
-          <CardContent className="pt-6">
+          <CardContent>
             <div className="flex items-center gap-2">
               <UserCog className="h-5 w-5 text-blue-600 dark:text-blue-400" />
               <p className="text-sm font-medium text-blue-900 dark:text-blue-100">

@@ -11,41 +11,13 @@ import type {
 
 export const leaveRequestsApi = {
   // Get all leave requests (Admin/HR/Manager)
-  getAllLeaveRequests: async (params?: {
-    page?: number;
-    limit?: number;
-    status?: string;
-    leaveTypeId?: string;
-    year?: number;
-  }): Promise<ApiResponse<LeaveRequest[]>> => {
-    const queryParams = new URLSearchParams();
-    if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.status) queryParams.append('status', params.status);
-    if (params?.leaveTypeId) queryParams.append('leaveTypeId', params.leaveTypeId);
-    if (params?.year) queryParams.append('year', params.year.toString());
-
-    const endpoint = `/leave-requests${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    return apiClient.get<ApiResponse<LeaveRequest[]>>(endpoint);
+  getAllLeaveRequests: async (): Promise<ApiResponse<LeaveRequest[]>> => {
+    return apiClient.get<ApiResponse<LeaveRequest[]>>('/leave-requests');
   },
 
   // Get my leave requests
-  getMyLeaveRequests: async (params?: {
-    page?: number;
-    limit?: number;
-    status?: string;
-    leaveTypeId?: string;
-    year?: number;
-  }): Promise<ApiResponse<LeaveRequest[]>> => {
-    const queryParams = new URLSearchParams();
-    if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.status) queryParams.append('status', params.status);
-    if (params?.leaveTypeId) queryParams.append('leaveTypeId', params.leaveTypeId);
-    if (params?.year) queryParams.append('year', params.year.toString());
-
-    const endpoint = `/leave-requests/my-leaves${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    return apiClient.get<ApiResponse<LeaveRequest[]>>(endpoint);
+  getMyLeaveRequests: async (): Promise<ApiResponse<LeaveRequest[]>> => {
+    return apiClient.get<ApiResponse<LeaveRequest[]>>('/leave-requests/my-leaves');
   },
 
   // Get leave request by ID

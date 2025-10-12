@@ -3,24 +3,8 @@ import type { ApiResponse, Employee, CreateEmployeeRequest, UpdateEmployeeReques
 
 export const employeesApi = {
   // Get all employees
-  getAllEmployees: async (params?: {
-    page?: number;
-    limit?: number;
-    search?: string;
-    departmentId?: string;
-    position?: string;
-    status?: string;
-  }): Promise<ApiResponse<Employee[]>> => {
-    const queryParams = new URLSearchParams();
-    if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.limit) queryParams.append('limit', params.limit.toString());
-    if (params?.search) queryParams.append('search', params.search);
-    if (params?.departmentId) queryParams.append('departmentId', params.departmentId);
-    if (params?.position) queryParams.append('position', params.position);
-    if (params?.status) queryParams.append('status', params.status);
-
-    const endpoint = `/employees${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    return apiClient.get<ApiResponse<Employee[]>>(endpoint);
+  getAllEmployees: async (): Promise<ApiResponse<Employee[]>> => {
+    return apiClient.get<ApiResponse<Employee[]>>('/employees');
   },
 
   // Get employee by ID
