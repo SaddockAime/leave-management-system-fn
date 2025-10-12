@@ -626,3 +626,302 @@ export interface UpdateOnboardingTaskRequest {
   actualDuration?: number;
   failureReason?: string;
 }
+
+// Compensation Management Types
+export type SalaryType = 'BASE_SALARY' | 'HOURLY_RATE' | 'COMMISSION' | 'BONUS' | 'ALLOWANCE';
+export type PayFrequency = 'HOURLY' | 'DAILY' | 'WEEKLY' | 'BI_WEEKLY' | 'MONTHLY' | 'ANNUALLY';
+
+export interface Salary {
+  id: string;
+  employeeId: string;
+  employee: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    position: string;
+    department: {
+      id: string;
+      name: string;
+    };
+  };
+  type: SalaryType;
+  amount: number;
+  payFrequency: PayFrequency;
+  effectiveDate: string;
+  endDate?: string;
+  reason?: string;
+  notes?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  percentageIncrease?: number;
+  previousAmount?: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateSalaryRequest {
+  employeeId: string;
+  type: SalaryType;
+  amount: number;
+  payFrequency: PayFrequency;
+  effectiveDate: string;
+  endDate?: string;
+  reason?: string;
+  notes?: string;
+  percentageIncrease?: number;
+  previousAmount?: number;
+}
+
+export interface UpdateSalaryRequest {
+  type?: SalaryType;
+  amount?: number;
+  payFrequency?: PayFrequency;
+  effectiveDate?: string;
+  endDate?: string;
+  reason?: string;
+  notes?: string;
+  percentageIncrease?: number;
+  previousAmount?: number;
+  isActive?: boolean;
+}
+
+export type BenefitType =
+  | 'HEALTH_INSURANCE'
+  | 'DENTAL_INSURANCE'
+  | 'VISION_INSURANCE'
+  | 'LIFE_INSURANCE'
+  | 'DISABILITY_INSURANCE'
+  | 'RETIREMENT_PLAN'
+  | 'PAID_TIME_OFF'
+  | 'SICK_LEAVE'
+  | 'MATERNITY_LEAVE'
+  | 'PATERNITY_LEAVE'
+  | 'EDUCATION_REIMBURSEMENT'
+  | 'TRANSPORTATION'
+  | 'MEAL_ALLOWANCE'
+  | 'GYM_MEMBERSHIP'
+  | 'OTHER';
+
+export type BenefitCategory =
+  | 'INSURANCE'
+  | 'RETIREMENT'
+  | 'TIME_OFF'
+  | 'WELLNESS'
+  | 'PROFESSIONAL_DEVELOPMENT'
+  | 'LIFESTYLE';
+
+export interface Benefit {
+  id: string;
+  name: string;
+  description: string;
+  type: BenefitType;
+  category: BenefitCategory;
+  cost?: number;
+  employeeContribution?: number;
+  employeeContributionPercentage?: number;
+  isActive: boolean;
+  requiresEnrollment: boolean;
+  effectiveDate?: string;
+  endDate?: string;
+  eligibilityCriteria?: string[];
+  documentsRequired?: string[];
+  provider?: string;
+  contactInfo?: string;
+  notes?: string;
+  createdBy?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateBenefitRequest {
+  name: string;
+  description: string;
+  type: BenefitType;
+  category: BenefitCategory;
+  cost?: number;
+  employeeContribution?: number;
+  employeeContributionPercentage?: number;
+  requiresEnrollment?: boolean;
+  effectiveDate?: string;
+  endDate?: string;
+  eligibilityCriteria?: string[];
+  documentsRequired?: string[];
+  provider?: string;
+  contactInfo?: string;
+  notes?: string;
+}
+
+export interface UpdateBenefitRequest {
+  name?: string;
+  description?: string;
+  type?: BenefitType;
+  category?: BenefitCategory;
+  cost?: number;
+  employeeContribution?: number;
+  employeeContributionPercentage?: number;
+  isActive?: boolean;
+  requiresEnrollment?: boolean;
+  effectiveDate?: string;
+  endDate?: string;
+  eligibilityCriteria?: string[];
+  documentsRequired?: string[];
+  provider?: string;
+  contactInfo?: string;
+  notes?: string;
+}
+
+export type BonusType =
+  | 'PERFORMANCE'
+  | 'ANNUAL'
+  | 'QUARTERLY'
+  | 'PROJECT'
+  | 'REFERRAL'
+  | 'RETENTION'
+  | 'SIGN_ON'
+  | 'MILESTONE'
+  | 'OTHER';
+
+export type BonusStatus = 'PENDING' | 'APPROVED' | 'PAID' | 'CANCELLED' | 'REJECTED';
+
+export interface Bonus {
+  id: string;
+  employeeId: string;
+  employee: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    position: string;
+    department: {
+      id: string;
+      name: string;
+    };
+  };
+  title: string;
+  description: string;
+  type: BonusType;
+  amount: number;
+  percentage?: number;
+  effectiveDate: string;
+  paymentDate?: string;
+  status: BonusStatus;
+  criteria?: string;
+  notes?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  rejectedBy?: string;
+  rejectedAt?: string;
+  rejectionReason?: string;
+  paymentMethod?: string;
+  referenceNumber?: string;
+  isTaxable: boolean;
+  taxAmount?: number;
+  netAmount?: number;
+  attachments?: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateBonusRequest {
+  employeeId: string;
+  title: string;
+  description: string;
+  type: BonusType;
+  amount: number;
+  percentage?: number;
+  effectiveDate: string;
+  paymentDate?: string;
+  criteria?: string;
+  notes?: string;
+  paymentMethod?: string;
+  isTaxable?: boolean;
+  taxAmount?: number;
+  netAmount?: number;
+}
+
+export interface UpdateBonusRequest {
+  title?: string;
+  description?: string;
+  type?: BonusType;
+  amount?: number;
+  percentage?: number;
+  effectiveDate?: string;
+  paymentDate?: string;
+  status?: BonusStatus;
+  criteria?: string;
+  notes?: string;
+  paymentMethod?: string;
+  referenceNumber?: string;
+  isTaxable?: boolean;
+  taxAmount?: number;
+  netAmount?: number;
+  rejectionReason?: string;
+}
+
+export type EnrollmentStatus = 'PENDING' | 'ACTIVE' | 'SUSPENDED' | 'TERMINATED' | 'WAITING_PERIOD';
+
+export interface EmployeeBenefit {
+  id: string;
+  employeeId: string;
+  employee: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    position: string;
+    department: {
+      id: string;
+      name: string;
+    };
+  };
+  benefitId: string;
+  benefit: Benefit;
+  status: EnrollmentStatus;
+  enrollmentDate: string;
+  effectiveDate?: string;
+  endDate?: string;
+  employeeContribution?: number;
+  companyContribution?: number;
+  dependents?: string[];
+  policyNumber?: string;
+  groupNumber?: string;
+  notes?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  terminationReason?: string;
+  terminatedBy?: string;
+  terminatedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AssignBenefitToEmployeeRequest {
+  employeeId: string;
+  benefitId: string;
+  enrollmentDate: string;
+  effectiveDate?: string;
+  endDate?: string;
+  employeeContribution?: number;
+  companyContribution?: number;
+  dependents?: string[];
+  policyNumber?: string;
+  groupNumber?: string;
+  notes?: string;
+}
+
+export interface UpdateEmployeeBenefitRequest {
+  status?: EnrollmentStatus;
+  effectiveDate?: string;
+  endDate?: string;
+  employeeContribution?: number;
+  companyContribution?: number;
+  dependents?: string[];
+  policyNumber?: string;
+  groupNumber?: string;
+  notes?: string;
+  terminationReason?: string;
+}
