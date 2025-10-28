@@ -13,7 +13,6 @@ import {
   FileText,
   Shield,
   ClipboardList,
-  Settings,
   UserCog,
   Bell,
   Tag,
@@ -32,7 +31,6 @@ const navigation = [
   { name: 'Compensation', href: '/dashboard/admin/compensation', icon: DollarSign },
   { name: 'Reports', href: '/dashboard/admin/reports', icon: FileText },
   { name: 'Audit Logs', href: '/dashboard/admin/audit', icon: ClipboardList },
-  { name: 'Settings', href: '/dashboard/admin/settings', icon: Settings },
   { name: 'My Profile', href: '/dashboard/admin/profile', icon: UserCog },
   { name: 'Notifications', href: '/dashboard/admin/notifications', icon: Bell },
 ];

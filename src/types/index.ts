@@ -968,3 +968,41 @@ export interface ReportFilters {
   employeeId?: string;
   reportType?: string;
 }
+
+// ===== Audit Types =====
+export type AuditAction =
+  | 'LOGIN'
+  | 'LOGOUT'
+  | 'LOGIN_FAILED'
+  | 'ROLE_CHANGE'
+  | 'USER_STATUS_CHANGE'
+  | 'LEAVE_APPROVED'
+  | 'LEAVE_REJECTED'
+  | 'PASSWORD_CHANGE'
+  | 'PASSWORD_RESET'
+  | 'CRITICAL_UPDATE';
+
+export type EntityType = 'User' | 'LeaveRequest' | 'System';
+
+export interface AuditLog {
+  id: string;
+  userId: string;
+  action: AuditAction;
+  entityType: EntityType;
+  entityId?: string;
+  oldValues?: Record<string, unknown>;
+  newValues?: Record<string, unknown>;
+  ipAddress?: string;
+  userAgent?: string;
+  description?: string;
+  timestamp: string;
+}
+
+export interface AuditFilters {
+  action?: AuditAction;
+  entityType?: EntityType;
+  userId?: string;
+  startDate?: string;
+  endDate?: string;
+  searchTerm?: string;
+}
