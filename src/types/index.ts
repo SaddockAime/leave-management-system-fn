@@ -150,6 +150,7 @@ export interface Employee {
     firstName: string;
     lastName: string;
     profilePicture?: string;
+    isActive: boolean;
   };
   position: string;
   hireDate: string;
@@ -157,12 +158,20 @@ export interface Employee {
   department: {
     id: string;
     name: string;
+    description?: string;
   };
   manager?: {
     id: string;
     user: {
       firstName: string;
       lastName: string;
+      profilePicture?: string;
+      email: string;
+    };
+    position: string;
+    department?: {
+      id: string;
+      name: string;
     };
   };
 }

@@ -18,13 +18,11 @@ import {
 import { User, Mail, Shield, Calendar, Edit, Trash2, Upload, Loader2, X } from 'lucide-react';
 import { profileApi } from '@/lib/api/profile';
 import { authApi } from '@/lib/api/auth';
-import { useAuth } from '@/lib/auth-context';
 import { storage } from '@/lib/storage';
 import type { User as UserType } from '@/types';
 import { toast } from 'sonner';
 
 export default function AdminProfilePage() {
-  const { user: authUser } = useAuth();
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<UserType | null>(null);
   const [showEditDialog, setShowEditDialog] = useState(false);
@@ -344,6 +342,7 @@ export default function AdminProfilePage() {
               <Label htmlFor="profilePicture">Profile Picture</Label>
               {previewUrl ? (
                 <div className="relative">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={previewUrl}
                     alt="Preview"

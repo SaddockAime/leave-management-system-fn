@@ -20,9 +20,8 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
-import { toast } from 'sonner';
 
-export default function EditEmployeePage() {
+export default function HREditEmployeePage() {
   const params = useParams();
   const navigation = useNavigation();
   const [employee, setEmployee] = useState<Employee | null>(null);
@@ -101,23 +100,15 @@ export default function EditEmployeePage() {
       setIsSubmitting(true);
       setError(null);
 
-      const submitData = {
+      await employeesApi.updateEmployee(params.id as string, {
         ...data,
         managerId: data.managerId === 'no-manager' || !data.managerId ? undefined : data.managerId,
-      };
+      });
 
-      const response = await employeesApi.updateEmployee(params.id as string, submitData);
-
-      if (response.success) {
-        toast.success('Employee updated successfully');
-        navigation.push('/dashboard/admin/employees');
-      } else {
-        toast.error(response.message || 'Failed to update employee');
-      }
+      navigation.push('/dashboard/hr/employees');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update employee';
       setError(errorMessage);
-      toast.error(errorMessage);
       console.error('Error updating employee:', err);
     } finally {
       setIsSubmitting(false);
@@ -265,7 +256,7 @@ export default function EditEmployeePage() {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => navigation.push('/dashboard/admin/employees')}
+                onClick={() => navigation.push('/dashboard/hr/employees')}
                 className="cursor-pointer"
               >
                 Cancel

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -73,17 +73,7 @@ export default function NotificationsPage() {
   const [total, setTotal] = useState(0);
   const limit = 20;
 
-  useEffect(() => {
-    fetchNotifications();
-  }, [currentPage, showUnreadOnly]);
-
-  // Listen for real-time notifications
-  useNotifications((data) => {
-    // Refresh notifications when a new one arrives
-    fetchNotifications();
-  });
-
-  const fetchNotifications = async () => {
+  const fetchNotifications = useCallback(async () => {
     try {
       setLoading(true);
       const response = await notificationsApi.getNotifications(currentPage, limit, showUnreadOnly);
@@ -99,7 +89,17 @@ export default function NotificationsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, showUnreadOnly]);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
+
+  // Listen for real-time notifications
+  useNotifications(() => {
+    // Refresh notifications when a new one arrives
+    fetchNotifications();
+  });
 
   const fetchPreferences = async () => {
     try {
