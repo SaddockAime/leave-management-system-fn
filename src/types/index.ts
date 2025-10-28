@@ -1006,3 +1006,32 @@ export interface AuditFilters {
   endDate?: string;
   searchTerm?: string;
 }
+
+// ===== Notification Types =====
+export type NotificationType =
+  | 'LEAVE_SUBMITTED'
+  | 'LEAVE_APPROVED'
+  | 'LEAVE_REJECTED'
+  | 'LEAVE_REMINDER'
+  | 'APPROVAL_PENDING'
+  | 'LEAVE_CANCELLED';
+
+export interface Notification {
+  id: string;
+  recipientId: string;
+  title: string;
+  message: string;
+  relatedEntityId?: string;
+  entityType?: string;
+  type: NotificationType;
+  read: boolean;
+  createdAt: string;
+}
+
+export interface NotificationPreferences {
+  emailNotifications: boolean;
+  leaveApprovals: boolean;
+  leaveRejections: boolean;
+  leaveReminders: boolean;
+  systemUpdates: boolean;
+}

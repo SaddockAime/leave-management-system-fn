@@ -4,6 +4,7 @@ import './globals.css';
 import '@/styles/nprogress.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { AuthProvider } from '@/lib/auth-context';
+import { SocketProvider } from '@/lib/socket-context';
 import { ProgressBar } from '@/components/progress-bar';
 
 const geistSans = Geist({
@@ -36,8 +37,10 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <ProgressBar />
-            {children}
+            <SocketProvider>
+              <ProgressBar />
+              {children}
+            </SocketProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>
