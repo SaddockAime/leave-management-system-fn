@@ -925,3 +925,46 @@ export interface UpdateEmployeeBenefitRequest {
   notes?: string;
   terminationReason?: string;
 }
+
+// ===== Report Types =====
+export interface LeaveByDepartmentReport {
+  departmentName: string;
+  leaveCount: number;
+  totalDays: number;
+}
+
+export interface LeaveByEmployeeReport {
+  employee: {
+    firstName: string;
+    lastName: string;
+  };
+  leaveData: Array<{
+    leaveType: string;
+    totalDays: number;
+  }>;
+}
+
+export interface LeaveByTypeReport {
+  leaveType: string;
+  leaveCount: number;
+  totalDays: number;
+}
+
+export interface LeaveCalendarEvent {
+  firstName: string;
+  lastName: string;
+  profilePicture?: string;
+  startDate: string;
+  endDate: string;
+  leaveType: string;
+  color: string;
+  department: string;
+}
+
+export interface ReportFilters {
+  year?: number;
+  month?: number;
+  departmentId?: string;
+  employeeId?: string;
+  reportType?: string;
+}
