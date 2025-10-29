@@ -258,6 +258,7 @@ export interface LeaveRequest {
       firstName: string;
       lastName: string;
       email: string;
+      profilePicture?: string;
     };
     department?: {
       id: string;
@@ -271,9 +272,12 @@ export interface LeaveRequest {
   status: LeaveRequestStatus;
   numberOfDays: number;
   approvedBy?: string;
+  approvedAt?: string;
   rejectedBy?: string;
+  rejectedAt?: string;
   cancelledBy?: string;
-  approverComments?: string;
+  cancelledAt?: string;
+  approvalReason?: string;
   rejectionReason?: string;
   cancellationReason?: string;
   createdAt: string;

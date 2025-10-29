@@ -314,7 +314,7 @@ export default function LeaveRequestViewPage() {
             </CardContent>
           </Card>
 
-          {leaveRequest.approverComments && (
+          {leaveRequest.approvalReason && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -323,7 +323,7 @@ export default function LeaveRequestViewPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground text-sm">{leaveRequest.approverComments}</p>
+                <p className="text-muted-foreground text-sm">{leaveRequest.approvalReason}</p>
               </CardContent>
             </Card>
           )}
