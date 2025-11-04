@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function LeaveDetailPage() {
+export default function ManagerTeamLeaveDetailPage() {
   const params = useParams();
   const navigation = useNavigation();
   const [leave, setLeave] = useState<LeaveRequest | null>(null);
@@ -65,12 +65,12 @@ export default function LeaveDetailPage() {
         setLeave(leaveData);
       } else {
         toast.error('Leave request not found');
-        navigation.push('/dashboard/hr/leaves');
+        navigation.push('/dashboard/manager/team-leaves');
       }
     } catch (err) {
       console.error('Error fetching leave request:', err);
       toast.error('Failed to fetch leave request details');
-      navigation.push('/dashboard/hr/leaves');
+      navigation.push('/dashboard/manager/team-leaves');
     } finally {
       setLoading(false);
     }
@@ -203,14 +203,16 @@ export default function LeaveDetailPage() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigation.push('/dashboard/hr/leaves')}
+            onClick={() => navigation.push('/dashboard/manager/team-leaves')}
             className="cursor-pointer"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">Leave Request Details</h1>
-            <p className="text-muted-foreground mt-1">Review and manage leave request</p>
+            <h1 className="text-3xl font-bold">Team Leave Request Details</h1>
+            <p className="text-muted-foreground mt-1">
+              Review and manage team member leave request
+            </p>
           </div>
         </div>
         {leave.status === 'PENDING' && (
@@ -405,7 +407,7 @@ export default function LeaveDetailPage() {
             <Button variant="outline" onClick={handleCloseApproveDialog} disabled={approving}>
               Cancel
             </Button>
-            <Button onClick={handleApprove} disabled={approving}>
+            <Button onClick={handleApprove} disabled={approving} className="cursor-pointer">
               {approving ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -451,7 +453,12 @@ export default function LeaveDetailPage() {
             <Button variant="outline" onClick={handleCloseRejectDialog} disabled={rejecting}>
               Cancel
             </Button>
-            <Button variant="destructive" onClick={handleReject} disabled={rejecting}>
+            <Button
+              variant="destructive"
+              onClick={handleReject}
+              disabled={rejecting}
+              className="cursor-pointer"
+            >
               {rejecting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

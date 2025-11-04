@@ -8,7 +8,6 @@ import type { LeaveRequest } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Dialog,
   DialogContent,
@@ -19,35 +18,19 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  ArrowLeft,
-  Calendar,
-  User,
-  FileText,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Loader2,
-  Mail,
-  Building2,
-} from 'lucide-react';
+import { ArrowLeft, Calendar, FileText, Clock, Loader2, Edit, X } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function LeaveDetailPage() {
+export default function ManagerLeaveDetailPage() {
   const params = useParams();
   const navigation = useNavigation();
   const [leave, setLeave] = useState<LeaveRequest | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Approve Dialog
-  const [showApproveDialog, setShowApproveDialog] = useState(false);
-  const [approveReason, setApproveReason] = useState('');
-  const [approving, setApproving] = useState(false);
-
-  // Reject Dialog
-  const [showRejectDialog, setShowRejectDialog] = useState(false);
-  const [rejectReason, setRejectReason] = useState('');
-  const [rejecting, setRejecting] = useState(false);
+  // Cancel Dialog
+  const [showCancelDialog, setShowCancelDialog] = useState(false);
+  const [cancelReason, setCancelReason] = useState('');
+  const [cancelling, setCancelling] = useState(false);
 
   const fetchLeave = async () => {
     try {
@@ -65,12 +48,12 @@ export default function LeaveDetailPage() {
         setLeave(leaveData);
       } else {
         toast.error('Leave request not found');
-        navigation.push('/dashboard/hr/leaves');
+        navigation.push('/dashboard/manager/leaves');
       }
     } catch (err) {
       console.error('Error fetching leave request:', err);
       toast.error('Failed to fetch leave request details');
-      navigation.push('/dashboard/hr/leaves');
+      navigation.push('/dashboard/manager/leaves');
     } finally {
       setLoading(false);
     }
@@ -120,66 +103,32 @@ export default function LeaveDetailPage() {
     );
   };
 
-  const handleOpenApproveDialog = () => {
-    setApproveReason('');
-    setShowApproveDialog(true);
+  const handleOpenCancelDialog = () => {
+    setCancelReason('');
+    setShowCancelDialog(true);
   };
 
-  const handleCloseApproveDialog = () => {
-    setShowApproveDialog(false);
-    setApproveReason('');
+  const handleCloseCancelDialog = () => {
+    setShowCancelDialog(false);
+    setCancelReason('');
   };
 
-  const handleApprove = async () => {
+  const handleCancel = async () => {
     if (!leave) return;
 
     try {
-      setApproving(true);
-      await leaveRequestsApi.approveLeaveRequest(leave.id, {
-        comments: approveReason || undefined,
+      setCancelling(true);
+      await leaveRequestsApi.cancelLeaveRequest(leave.id, {
+        reason: cancelReason || undefined,
       });
-      toast.success('Leave request approved successfully');
-      handleCloseApproveDialog();
+      toast.success('Leave request cancelled successfully');
+      handleCloseCancelDialog();
       fetchLeave();
     } catch (error) {
-      console.error('Error approving leave:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to approve leave request');
+      console.error('Error cancelling leave:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to cancel leave request');
     } finally {
-      setApproving(false);
-    }
-  };
-
-  const handleOpenRejectDialog = () => {
-    setRejectReason('');
-    setShowRejectDialog(true);
-  };
-
-  const handleCloseRejectDialog = () => {
-    setShowRejectDialog(false);
-    setRejectReason('');
-  };
-
-  const handleReject = async () => {
-    if (!leave) return;
-
-    if (!rejectReason.trim()) {
-      toast.error('Please provide a reason for rejection');
-      return;
-    }
-
-    try {
-      setRejecting(true);
-      await leaveRequestsApi.rejectLeaveRequest(leave.id, {
-        reason: rejectReason,
-      });
-      toast.success('Leave request rejected successfully');
-      handleCloseRejectDialog();
-      fetchLeave();
-    } catch (error) {
-      console.error('Error rejecting leave:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to reject leave request');
-    } finally {
-      setRejecting(false);
+      setCancelling(false);
     }
   };
 
@@ -203,66 +152,37 @@ export default function LeaveDetailPage() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => navigation.push('/dashboard/hr/leaves')}
+            onClick={() => navigation.push('/dashboard/manager/leaves')}
             className="cursor-pointer"
           >
             <ArrowLeft className="h-5 w-5" />
           </Button>
           <div>
             <h1 className="text-3xl font-bold">Leave Request Details</h1>
-            <p className="text-muted-foreground mt-1">Review and manage leave request</p>
+            <p className="text-muted-foreground mt-1">View your leave request details</p>
           </div>
         </div>
         {leave.status === 'PENDING' && (
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleOpenRejectDialog} className="cursor-pointer">
-              <XCircle className="mr-2 h-4 w-4" />
-              Reject
+            <Button
+              variant="outline"
+              onClick={() => navigation.push(`/dashboard/manager/leaves/${leave.id}/edit`)}
+              className="cursor-pointer"
+            >
+              <Edit className="mr-2 h-4 w-4" />
+              Edit
             </Button>
-            <Button onClick={handleOpenApproveDialog} className="cursor-pointer">
-              <CheckCircle className="mr-2 h-4 w-4" />
-              Approve
+            <Button
+              variant="destructive"
+              onClick={handleOpenCancelDialog}
+              className="cursor-pointer"
+            >
+              <X className="mr-2 h-4 w-4" />
+              Cancel
             </Button>
           </div>
         )}
       </div>
-
-      {/* Employee Information */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Employee Information</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-start gap-4">
-            <Avatar className="h-16 w-16">
-              <AvatarImage src={leave.employee.user.profilePicture || undefined} />
-              <AvatarFallback className="text-lg">
-                {leave.employee.user.firstName[0]}
-                {leave.employee.user.lastName[0]}
-              </AvatarFallback>
-            </Avatar>
-            <div className="flex-1 space-y-3">
-              <div>
-                <h3 className="text-xl font-semibold">
-                  {leave.employee.user.firstName} {leave.employee.user.lastName}
-                </h3>
-                <div className="text-muted-foreground mt-2 flex flex-wrap gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <Mail className="h-4 w-4" />
-                    {leave.employee.user.email}
-                  </div>
-                  {leave.employee.department && (
-                    <div className="flex items-center gap-2">
-                      <Building2 className="h-4 w-4" />
-                      {leave.employee.department.name}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       {/* Leave Details */}
       <Card>
@@ -340,24 +260,18 @@ export default function LeaveDetailPage() {
           <CardContent className="space-y-4">
             {leave.approvedBy && (
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <User className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground text-sm">
-                    {leave.status === 'APPROVED' ? 'Approved By' : 'Rejected By'}
-                  </span>
-                </div>
+                <span className="text-muted-foreground text-sm">
+                  {leave.status === 'APPROVED' ? 'Approved By' : 'Rejected By'}
+                </span>
                 <p className="font-medium">{leave.approvedBy}</p>
               </div>
             )}
 
             {leave.approvedAt && (
               <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <Calendar className="text-muted-foreground h-4 w-4" />
-                  <span className="text-muted-foreground text-sm">
-                    {leave.status === 'APPROVED' ? 'Approved On' : 'Rejected On'}
-                  </span>
-                </div>
+                <span className="text-muted-foreground text-sm">
+                  {leave.status === 'APPROVED' ? 'Approved On' : 'Rejected On'}
+                </span>
                 <p className="font-medium">{formatDateTime(leave.approvedAt)}</p>
               </div>
             )}
@@ -376,89 +290,39 @@ export default function LeaveDetailPage() {
         </Card>
       )}
 
-      {/* Approve Dialog */}
-      <Dialog open={showApproveDialog} onOpenChange={setShowApproveDialog}>
+      {/* Cancel Dialog */}
+      <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Approve Leave Request</DialogTitle>
+            <DialogTitle>Cancel Leave Request</DialogTitle>
             <DialogDescription>
-              Are you sure you want to approve this leave request for{' '}
-              <strong>
-                {leave.employee.user.firstName} {leave.employee.user.lastName}
-              </strong>
-              ?
+              Are you sure you want to cancel this leave request? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="approveReason">Approval Note (Optional)</Label>
+              <Label htmlFor="cancelReason">Cancellation Reason (Optional)</Label>
               <Textarea
-                id="approveReason"
-                value={approveReason}
-                onChange={(e) => setApproveReason(e.target.value)}
+                id="cancelReason"
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
                 placeholder="Add any notes or comments..."
                 rows={3}
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={handleCloseApproveDialog} disabled={approving}>
+            <Button variant="outline" onClick={handleCloseCancelDialog} disabled={cancelling}>
               Cancel
             </Button>
-            <Button onClick={handleApprove} disabled={approving}>
-              {approving ? (
+            <Button variant="destructive" onClick={handleCancel} disabled={cancelling}>
+              {cancelling ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Approving...
+                  Cancelling...
                 </>
               ) : (
-                'Approve'
-              )}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Reject Dialog */}
-      <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Reject Leave Request</DialogTitle>
-            <DialogDescription>
-              Please provide a reason for rejecting this leave request from{' '}
-              <strong>
-                {leave.employee.user.firstName} {leave.employee.user.lastName}
-              </strong>
-              .
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label htmlFor="rejectReason">
-                Rejection Reason <span className="text-destructive">*</span>
-              </Label>
-              <Textarea
-                id="rejectReason"
-                value={rejectReason}
-                onChange={(e) => setRejectReason(e.target.value)}
-                placeholder="Provide a clear reason for rejection..."
-                rows={4}
-                required
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={handleCloseRejectDialog} disabled={rejecting}>
-              Cancel
-            </Button>
-            <Button variant="destructive" onClick={handleReject} disabled={rejecting}>
-              {rejecting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Rejecting...
-                </>
-              ) : (
-                'Reject'
+                'Cancel Leave Request'
               )}
             </Button>
           </DialogFooter>

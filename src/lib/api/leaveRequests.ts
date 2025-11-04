@@ -20,6 +20,11 @@ export const leaveRequestsApi = {
     return apiClient.get<ApiResponse<LeaveRequest[]>>('/leave-requests/my-leaves');
   },
 
+  // Get team leave requests (Manager only)
+  getTeamLeaveRequests: async (): Promise<ApiResponse<LeaveRequest[]>> => {
+    return apiClient.get<ApiResponse<LeaveRequest[]>>('/leave-requests/team');
+  },
+
   // Get leave request by ID
   getLeaveRequestById: async (id: string): Promise<ApiResponse<LeaveRequest>> => {
     return apiClient.get<ApiResponse<LeaveRequest>>(`/leave-requests/${id}`);
