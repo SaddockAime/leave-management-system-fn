@@ -20,6 +20,16 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: 'Leave Management System',
   description: 'Comprehensive leave management system with role-based access control',
+  icons: {
+    icon: [
+      {
+        url: '/lms-hr-fav.png',
+        type: 'image/png',
+      },
+    ],
+    shortcut: '/lms-hr-fav.png',
+    apple: '/lms-hr-fav.png',
+  },
 };
 
 export default function RootLayout({
