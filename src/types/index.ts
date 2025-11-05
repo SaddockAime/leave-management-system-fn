@@ -232,6 +232,24 @@ export interface LeaveType {
   updatedAt?: string;
 }
 
+export interface LeaveBalance {
+  id: string;
+  employeeId: string;
+  leaveTypeId: string;
+  leaveType: LeaveType;
+  year: number;
+  allocated: number;
+  used: number;
+  pending: number;
+  carryOver: number;
+  adjustment: number;
+  adjustmentReason?: string;
+  expiryDate?: string;
+  available: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface CreateLeaveTypeRequest {
   name: string;
   description?: string;
