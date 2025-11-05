@@ -13,15 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import {
-  Calendar,
-  Loader2,
-  TrendingUp,
-  TrendingDown,
-  FileText,
-  Clock,
-  CheckCircle,
-} from 'lucide-react';
+import { Calendar, Loader2, TrendingUp, FileText, Clock, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function EmployeeLeaveBalancePage() {

@@ -302,6 +302,16 @@ export interface LeaveRequest {
   updatedAt: string;
 }
 
+export interface Document {
+  id: string;
+  leaveRequestId: string;
+  leaveRequest?: LeaveRequest;
+  cloudinaryPublicId: string;
+  cloudinaryUrl: string;
+  uploadedById: string;
+  createdAt: string;
+}
+
 export interface CreateLeaveRequestRequest {
   leaveTypeId: string;
   startDate: string;

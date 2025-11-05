@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { useNavigation } from '@/hooks/use-navigation';
 import { leaveRequestsApi } from '@/lib/api/leaveRequests';
-import type { LeaveRequest } from '@/types';
+import { documentsApi } from '@/lib/api/documents';
+import type { LeaveRequest, Document } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -18,7 +19,19 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowLeft, Calendar, FileText, Clock, Loader2, Edit, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import {
+  ArrowLeft,
+  Calendar,
+  FileText,
+  Clock,
+  Loader2,
+  Edit,
+  X,
+  Upload,
+  Download,
+  Eye,
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function EmployeeLeaveDetailPage() {
@@ -26,11 +39,18 @@ export default function EmployeeLeaveDetailPage() {
   const navigation = useNavigation();
   const [leave, setLeave] = useState<LeaveRequest | null>(null);
   const [loading, setLoading] = useState(true);
+  const [documents, setDocuments] = useState<Document[]>([]);
+  const [loadingDocuments, setLoadingDocuments] = useState(false);
 
   // Cancel Dialog
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [cancelReason, setCancelReason] = useState('');
   const [cancelling, setCancelling] = useState(false);
+
+  // Upload Dialog
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   const fetchLeave = async () => {
     try {
@@ -59,9 +79,29 @@ export default function EmployeeLeaveDetailPage() {
     }
   };
 
+  const fetchDocuments = async () => {
+    if (!params.id) return;
+
+    try {
+      setLoadingDocuments(true);
+      const response = await documentsApi.getDocumentsByLeaveRequest(params.id as string);
+      if (response.success && response.data) {
+        setDocuments(response.data);
+      } else if (Array.isArray(response)) {
+        setDocuments(response);
+      }
+    } catch (err) {
+      console.error('Error fetching documents:', err);
+      // Don't show error toast for documents as it's not critical
+    } finally {
+      setLoadingDocuments(false);
+    }
+  };
+
   useEffect(() => {
     if (params.id) {
       fetchLeave();
+      fetchDocuments();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [params.id]);
@@ -71,16 +111,6 @@ export default function EmployeeLeaveDetailPage() {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
-    });
-  };
-
-  const formatDateTime = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
     });
   };
 
@@ -130,6 +160,97 @@ export default function EmployeeLeaveDetailPage() {
     } finally {
       setCancelling(false);
     }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      const allowedTypes = [
+        'application/pdf',
+        'image/jpeg',
+        'image/png',
+        'image/jpg',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      ];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error('Invalid file type. Please upload PDF, Word, or image files.');
+        return;
+      }
+
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error('File size must be less than 10MB');
+        return;
+      }
+
+      setSelectedFile(file);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile || !leave) return;
+
+    try {
+      setUploading(true);
+      const response = await documentsApi.uploadDocument(leave.id, selectedFile);
+
+      if (response.success) {
+        toast.success('Document uploaded successfully');
+        setShowUploadDialog(false);
+        setSelectedFile(null);
+        fetchDocuments();
+      } else {
+        toast.error(response.message || 'Failed to upload document');
+      }
+    } catch (error) {
+      console.error('Error uploading document:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to upload document');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDownload = (document: Document) => {
+    window.open(document.cloudinaryUrl, '_blank');
+  };
+
+  const handleOpenUploadDialog = () => {
+    setSelectedFile(null);
+    setShowUploadDialog(true);
+  };
+
+  const handleCloseUploadDialog = () => {
+    setShowUploadDialog(false);
+    setSelectedFile(null);
+  };
+
+  const getFileTypeIcon = (url: string) => {
+    if (url.includes('.pdf')) return '📄';
+    if (url.includes('.doc') || url.includes('.docx')) return '📝';
+    if (url.includes('.jpg') || url.includes('.jpeg') || url.includes('.png')) return '🖼️';
+    return '📎';
+  };
+
+  const getFileName = (url: string) => {
+    try {
+      const parts = url.split('/');
+      const fileName = parts[parts.length - 1];
+      return fileName.split('?')[0]; // Remove query parameters
+    } catch {
+      return 'Document';
+    }
+  };
+
+  const formatDateTime = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   };
 
   if (loading) {
@@ -249,6 +370,78 @@ export default function EmployeeLeaveDetailPage() {
         </CardContent>
       </Card>
 
+      {/* Documents Section */}
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <CardTitle>Documents</CardTitle>
+            {leave.status === 'PENDING' && (
+              <Button onClick={handleOpenUploadDialog} className="cursor-pointer">
+                <Upload className="mr-2 h-4 w-4" />
+                Upload Document
+              </Button>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          {loadingDocuments ? (
+            <div className="flex h-32 items-center justify-center">
+              <Loader2 className="text-primary h-6 w-6 animate-spin" />
+            </div>
+          ) : documents.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-8 text-center">
+              <FileText className="text-muted-foreground mb-2 h-8 w-8" />
+              <p className="text-muted-foreground text-sm">
+                No documents uploaded for this leave request
+              </p>
+              {leave.status === 'PENDING' && (
+                <p className="text-muted-foreground mt-1 text-xs">
+                  Click Upload Document to add supporting documents
+                </p>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {documents.map((document) => (
+                <div
+                  key={document.id}
+                  className="hover:bg-muted/50 flex items-center justify-between rounded-md border p-3"
+                >
+                  <div className="flex flex-1 items-center gap-3">
+                    <div className="text-2xl">{getFileTypeIcon(document.cloudinaryUrl)}</div>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-medium">{getFileName(document.cloudinaryUrl)}</p>
+                      <p className="text-muted-foreground text-xs">
+                        Uploaded {formatDateTime(document.createdAt)}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDownload(document)}
+                      className="cursor-pointer"
+                    >
+                      <Eye className="mr-2 h-4 w-4" />
+                      View
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDownload(document)}
+                      className="cursor-pointer"
+                    >
+                      <Download className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Approval/Rejection Information */}
       {(leave.status === 'APPROVED' || leave.status === 'REJECTED') && (
         <Card>
@@ -289,6 +482,58 @@ export default function EmployeeLeaveDetailPage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Upload Dialog */}
+      <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload Document</DialogTitle>
+            <DialogDescription>
+              Upload a supporting document for your leave request. Accepted formats: PDF, Word,
+              Images (max 10MB)
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="document">Select Document</Label>
+              <Input
+                id="document"
+                type="file"
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                onChange={handleFileSelect}
+                disabled={uploading}
+              />
+              {selectedFile && (
+                <p className="text-muted-foreground text-sm">
+                  Selected: {selectedFile.name} ({(selectedFile.size / 1024 / 1024).toFixed(2)} MB)
+                </p>
+              )}
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={handleCloseUploadDialog} disabled={uploading}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleUpload}
+              disabled={!selectedFile || uploading}
+              className="cursor-pointer"
+            >
+              {uploading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                <>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Cancel Dialog */}
       <Dialog open={showCancelDialog} onOpenChange={setShowCancelDialog}>
