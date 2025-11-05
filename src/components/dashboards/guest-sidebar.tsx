@@ -55,7 +55,9 @@ export function GuestSidebar({ isCollapsed, onToggle }: GuestSidebarProps) {
         {/* Navigation */}
         <nav className="flex-1 space-y-1 px-3 py-4">
           {navigation.map((item) => {
-            const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+            const isActive =
+              pathname === item.href ||
+              (item.href !== '/dashboard/guest' && pathname.startsWith(item.href + '/'));
             return (
               <Link
                 key={item.name}
