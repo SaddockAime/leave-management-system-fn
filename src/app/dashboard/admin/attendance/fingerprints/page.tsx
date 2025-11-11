@@ -203,8 +203,7 @@ export default function FingerprintManagementPage() {
           <CardContent>
             <div className="text-2xl font-bold">{enrolledCount}</div>
             <p className="text-muted-foreground text-xs">
-              {totalCount > 0 ? Math.round((enrolledCount / totalCount) * 100) : 0}% enrollment
-              rate
+              {totalCount > 0 ? Math.round((enrolledCount / totalCount) * 100) : 0}% enrollment rate
             </p>
           </CardContent>
         </Card>
@@ -311,9 +310,7 @@ export default function FingerprintManagementPage() {
                             'N/A'
                           )}
                         </TableCell>
-                        <TableCell>
-                          {item.employee ? item.employee.position : 'N/A'}
-                        </TableCell>
+                        <TableCell>{item.employee ? item.employee.position : 'N/A'}</TableCell>
                         <TableCell>
                           <Badge
                             variant={item.enrolled ? 'default' : 'secondary'}
@@ -495,4 +492,3 @@ export default function FingerprintManagementPage() {
     </div>
   );
 }
-

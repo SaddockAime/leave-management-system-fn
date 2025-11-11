@@ -182,22 +182,10 @@ export default function AttendanceViewPage() {
           label="Employee"
           value={`${attendance.employee.user.firstName} ${attendance.employee.user.lastName}`}
         />
-        <InfoItem
-          icon={Building2}
-          label="Department"
-          value={attendance.employee.department.name}
-        />
+        <InfoItem icon={Building2} label="Department" value={attendance.employee.department.name} />
         <InfoItem icon={Calendar} label="Date" value={formatDate(attendance.date)} />
-        <InfoItem
-          icon={Clock}
-          label="Check In Time"
-          value={formatTime(attendance.checkInTime)}
-        />
-        <InfoItem
-          icon={Clock}
-          label="Check Out Time"
-          value={formatTime(attendance.checkOutTime)}
-        />
+        <InfoItem icon={Clock} label="Check In Time" value={formatTime(attendance.checkInTime)} />
+        <InfoItem icon={Clock} label="Check Out Time" value={formatTime(attendance.checkOutTime)} />
         <InfoItem
           icon={attendance.verificationMethod === 'FINGERPRINT' ? Fingerprint : UserCheck}
           label="Verification Method"
@@ -285,4 +273,3 @@ export default function AttendanceViewPage() {
     </div>
   );
 }
-

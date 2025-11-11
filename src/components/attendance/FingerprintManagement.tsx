@@ -63,7 +63,7 @@ export function FingerprintManagement({
           : [statusResponse.data];
         // Find the status for this specific employee
         const employeeStatus = statusArray.find((s) => s.employeeId === employeeId);
-        
+
         if (employeeStatus) {
           console.log('Fingerprint status for employee:', employeeStatus);
           setFingerprintStatus(employeeStatus);
@@ -136,7 +136,10 @@ export function FingerprintManagement({
       if (err instanceof Error) {
         errorMessage = err.message;
         // Check if it's an "already enrolled" error
-        if (err.message.toLowerCase().includes('already') || err.message.toLowerCase().includes('enrolled')) {
+        if (
+          err.message.toLowerCase().includes('already') ||
+          err.message.toLowerCase().includes('enrolled')
+        ) {
           toast.warning('Fingerprint is already enrolled. Use "Update Fingerprint" to re-enroll.');
           setEnrollDialogOpen(false);
           await fetchData(); // Refresh status
@@ -162,8 +165,7 @@ export function FingerprintManagement({
         toast.error(response.message || 'Failed to update fingerprint');
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Failed to update fingerprint';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update fingerprint';
       toast.error(errorMessage);
     } finally {
       setUpdating(false);
@@ -183,8 +185,7 @@ export function FingerprintManagement({
         toast.error(response.message || 'Failed to remove fingerprint');
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Failed to remove fingerprint';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to remove fingerprint';
       toast.error(errorMessage);
     } finally {
       setRemoving(false);
@@ -210,7 +211,7 @@ export function FingerprintManagement({
 
   // Properly check enrollment status - explicitly check for true
   const isEnrolled = fingerprintStatus?.enrolled === true;
-  
+
   // Debug logging
   if (process.env.NODE_ENV === 'development') {
     console.log('Fingerprint enrollment check:', {
@@ -231,9 +232,7 @@ export function FingerprintManagement({
                 <Fingerprint className="h-5 w-5" />
                 Fingerprint Enrollment Status
               </CardTitle>
-              <CardDescription>
-                Manage fingerprint enrollment for {employeeName}
-              </CardDescription>
+              <CardDescription>Manage fingerprint enrollment for {employeeName}</CardDescription>
             </div>
             <Badge variant={isEnrolled ? 'default' : 'secondary'} className="gap-1">
               {isEnrolled ? (
@@ -295,9 +294,7 @@ export function FingerprintManagement({
             <div className="space-y-4">
               <div className="bg-muted flex flex-col items-center rounded-lg p-6 text-center">
                 <Fingerprint className="text-muted-foreground mb-4 h-12 w-12" />
-                <p className="text-muted-foreground mb-2 font-medium">
-                  No fingerprint enrolled
-                </p>
+                <p className="text-muted-foreground mb-2 font-medium">No fingerprint enrolled</p>
                 <p className="text-muted-foreground text-sm">
                   Enroll a fingerprint to enable fingerprint-based attendance tracking.
                 </p>
@@ -487,4 +484,3 @@ export function FingerprintManagement({
     </div>
   );
 }
-

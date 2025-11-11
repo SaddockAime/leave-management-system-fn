@@ -101,8 +101,7 @@ export default function EditAttendancePage() {
       }
     } catch (error: unknown) {
       console.error('Error updating attendance:', error);
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to update attendance';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update attendance';
       toast.error(errorMessage);
     } finally {
       setSaving(false);
@@ -225,9 +224,7 @@ export default function EditAttendancePage() {
                   placeholder="Enter any additional notes..."
                   rows={4}
                 />
-                {errors.notes && (
-                  <p className="text-destructive text-sm">{errors.notes.message}</p>
-                )}
+                {errors.notes && <p className="text-destructive text-sm">{errors.notes.message}</p>}
               </div>
             </CardContent>
           </Card>
@@ -261,4 +258,3 @@ export default function EditAttendancePage() {
     </div>
   );
 }
-

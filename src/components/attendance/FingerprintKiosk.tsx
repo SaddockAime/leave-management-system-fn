@@ -26,9 +26,7 @@ export function FingerprintKiosk() {
         const result = {
           ...response.data,
           confidence:
-            response.data.confidence ??
-            response.data.attendance?.confidenceScore ??
-            undefined,
+            response.data.confidence ?? response.data.attendance?.confidenceScore ?? undefined,
         };
         setLastResult(result);
         toast.success(response.data.message || 'Attendance marked successfully');
@@ -37,8 +35,7 @@ export function FingerprintKiosk() {
         toast.error(response.message || 'Failed to mark attendance');
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Failed to mark attendance';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to mark attendance';
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -77,7 +74,7 @@ export function FingerprintKiosk() {
             <div
               className={`relative flex h-64 w-64 flex-col items-center justify-center rounded-full border-4 transition-all ${
                 scanning
-                  ? 'border-primary animate-pulse bg-primary/10'
+                  ? 'border-primary bg-primary/10 animate-pulse'
                   : lastResult
                     ? 'border-green-500 bg-green-50 dark:bg-green-950'
                     : error
@@ -91,7 +88,9 @@ export function FingerprintKiosk() {
                   <p className="mt-4 text-center text-sm font-medium">
                     Scanning fingerprint...
                     <br />
-                    <span className="text-muted-foreground">Please keep your finger on the scanner</span>
+                    <span className="text-muted-foreground">
+                      Please keep your finger on the scanner
+                    </span>
                   </p>
                 </>
               ) : lastResult ? (
@@ -230,4 +229,3 @@ export function FingerprintKiosk() {
     </div>
   );
 }
-

@@ -39,4 +39,3 @@ export const updateAttendanceSchema = z.object({
 // Type exports
 export type CreateAttendanceFormData = z.infer<typeof createAttendanceSchema>;
 export type UpdateAttendanceFormData = z.infer<typeof updateAttendanceSchema>;
-

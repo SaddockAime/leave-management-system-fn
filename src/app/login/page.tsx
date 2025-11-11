@@ -47,7 +47,7 @@ function LoginForm() {
     });
     setError(null);
     setShowPassword(false);
-    
+
     // Always clear redirect parameter from URL when login page loads
     // This ensures clean URL after logout
     if (typeof window !== 'undefined') {

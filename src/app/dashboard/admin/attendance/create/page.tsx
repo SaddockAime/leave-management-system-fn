@@ -21,7 +21,15 @@ import {
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Calendar, Loader2, ArrowLeft, Fingerprint, UserCheck, AlertCircle, ExternalLink } from 'lucide-react';
+import {
+  Calendar,
+  Loader2,
+  ArrowLeft,
+  Fingerprint,
+  UserCheck,
+  AlertCircle,
+  ExternalLink,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
@@ -154,8 +162,7 @@ export default function CreateAttendancePage() {
         toast.error(response.message || 'Failed to record attendance');
       }
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Failed to record attendance';
+      const errorMessage = err instanceof Error ? err.message : 'Failed to record attendance';
       toast.error(errorMessage);
       console.error('Error creating attendance:', err);
     } finally {
@@ -213,8 +220,7 @@ export default function CreateAttendancePage() {
               duration: 6000,
               action: {
                 label: 'Enroll Now',
-                onClick: () =>
-                  navigation.push(`/dashboard/admin/employees/${formData.employeeId}`),
+                onClick: () => navigation.push(`/dashboard/admin/employees/${formData.employeeId}`),
               },
             }
           );
@@ -274,7 +280,11 @@ export default function CreateAttendancePage() {
       </div>
 
       {/* Recording Mode Tabs */}
-      <Tabs value={recordingMode} onValueChange={(value) => setRecordingMode(value as 'manual' | 'fingerprint')} className="space-y-6">
+      <Tabs
+        value={recordingMode}
+        onValueChange={(value) => setRecordingMode(value as 'manual' | 'fingerprint')}
+        className="space-y-6"
+      >
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="manual" className="cursor-pointer">
             <UserCheck className="mr-2 h-4 w-4" />
@@ -289,148 +299,143 @@ export default function CreateAttendancePage() {
         {/* Manual Entry Tab */}
         <TabsContent value="manual" className="space-y-6">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Employee Selection */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Employee Information</CardTitle>
-              <CardDescription>Select the employee for attendance recording</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="employeeId">
-                  Employee <span className="text-destructive">*</span>
-                </Label>
-                <Select
-                  value={formData.employeeId}
-                  onValueChange={(value) => setValue('employeeId', value)}
-                >
-                  <SelectTrigger id="employeeId">
-                    <SelectValue placeholder="Select an employee" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {employees.map((emp) => (
-                      <SelectItem key={emp.id} value={emp.id}>
-                        {emp.user.firstName} {emp.user.lastName} - {emp.position} (
-                        {emp.department?.name || 'N/A'})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.employeeId && (
-                  <p className="text-destructive text-sm">{errors.employeeId.message}</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+            <div className="grid gap-6 lg:grid-cols-2">
+              {/* Employee Selection */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Employee Information</CardTitle>
+                  <CardDescription>Select the employee for attendance recording</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="employeeId">
+                      Employee <span className="text-destructive">*</span>
+                    </Label>
+                    <Select
+                      value={formData.employeeId}
+                      onValueChange={(value) => setValue('employeeId', value)}
+                    >
+                      <SelectTrigger id="employeeId">
+                        <SelectValue placeholder="Select an employee" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {employees.map((emp) => (
+                          <SelectItem key={emp.id} value={emp.id}>
+                            {emp.user.firstName} {emp.user.lastName} - {emp.position} (
+                            {emp.department?.name || 'N/A'})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    {errors.employeeId && (
+                      <p className="text-destructive text-sm">{errors.employeeId.message}</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* Date and Status */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Attendance Details</CardTitle>
-              <CardDescription>Set the date and status</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="date">
-                  Date <span className="text-destructive">*</span>
-                </Label>
-                <div className="relative">
-                  <Calendar className="text-muted-foreground absolute left-3 top-3 h-4 w-4" />
-                  <Input
-                    id="date"
-                    type="date"
-                    {...register('date')}
-                    className="pl-10"
-                  />
-                </div>
-                {errors.date && (
-                  <p className="text-destructive text-sm">{errors.date.message}</p>
-                )}
-              </div>
+              {/* Date and Status */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Attendance Details</CardTitle>
+                  <CardDescription>Set the date and status</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="date">
+                      Date <span className="text-destructive">*</span>
+                    </Label>
+                    <div className="relative">
+                      <Calendar className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
+                      <Input id="date" type="date" {...register('date')} className="pl-10" />
+                    </div>
+                    {errors.date && (
+                      <p className="text-destructive text-sm">{errors.date.message}</p>
+                    )}
+                  </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="status">
-                  Status <span className="text-destructive">*</span>
-                </Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => setValue('status', value as AttendanceStatus)}
-                >
-                  <SelectTrigger id="status">
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="PRESENT">Present</SelectItem>
-                    <SelectItem value="ABSENT">Absent</SelectItem>
-                    <SelectItem value="HALF_DAY">Half Day</SelectItem>
-                    <SelectItem value="LEAVE">Leave</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.status && (
-                  <p className="text-destructive text-sm">{errors.status.message}</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                  <div className="space-y-2">
+                    <Label htmlFor="status">
+                      Status <span className="text-destructive">*</span>
+                    </Label>
+                    <Select
+                      value={formData.status}
+                      onValueChange={(value) => setValue('status', value as AttendanceStatus)}
+                    >
+                      <SelectTrigger id="status">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="PRESENT">Present</SelectItem>
+                        <SelectItem value="ABSENT">Absent</SelectItem>
+                        <SelectItem value="HALF_DAY">Half Day</SelectItem>
+                        <SelectItem value="LEAVE">Leave</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {errors.status && (
+                      <p className="text-destructive text-sm">{errors.status.message}</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* Time Information */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Time Information</CardTitle>
-              <CardDescription>Record check-in and check-out times</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="checkInTime">Check In Time (HH:MM)</Label>
-                <Input
-                  id="checkInTime"
-                  type="time"
-                  {...register('checkInTime')}
-                  placeholder="09:00"
-                />
-                {errors.checkInTime && (
-                  <p className="text-destructive text-sm">{errors.checkInTime.message}</p>
-                )}
-              </div>
+              {/* Time Information */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Time Information</CardTitle>
+                  <CardDescription>Record check-in and check-out times</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="checkInTime">Check In Time (HH:MM)</Label>
+                    <Input
+                      id="checkInTime"
+                      type="time"
+                      {...register('checkInTime')}
+                      placeholder="09:00"
+                    />
+                    {errors.checkInTime && (
+                      <p className="text-destructive text-sm">{errors.checkInTime.message}</p>
+                    )}
+                  </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="checkOutTime">Check Out Time (HH:MM)</Label>
-                <Input
-                  id="checkOutTime"
-                  type="time"
-                  {...register('checkOutTime')}
-                  placeholder="17:00"
-                />
-                {errors.checkOutTime && (
-                  <p className="text-destructive text-sm">{errors.checkOutTime.message}</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
+                  <div className="space-y-2">
+                    <Label htmlFor="checkOutTime">Check Out Time (HH:MM)</Label>
+                    <Input
+                      id="checkOutTime"
+                      type="time"
+                      {...register('checkOutTime')}
+                      placeholder="17:00"
+                    />
+                    {errors.checkOutTime && (
+                      <p className="text-destructive text-sm">{errors.checkOutTime.message}</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
 
-          {/* Notes */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Additional Information</CardTitle>
-              <CardDescription>Add any additional notes or comments</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                <Label htmlFor="notes">Notes</Label>
-                <Textarea
-                  id="notes"
-                  {...register('notes')}
-                  placeholder="Enter any additional notes..."
-                  rows={4}
-                />
-                {errors.notes && (
-                  <p className="text-destructive text-sm">{errors.notes.message}</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+              {/* Notes */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Additional Information</CardTitle>
+                  <CardDescription>Add any additional notes or comments</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <Label htmlFor="notes">Notes</Label>
+                    <Textarea
+                      id="notes"
+                      {...register('notes')}
+                      placeholder="Enter any additional notes..."
+                      rows={4}
+                    />
+                    {errors.notes && (
+                      <p className="text-destructive text-sm">{errors.notes.message}</p>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
             {/* Form Actions */}
             <div className="flex justify-end gap-4">
@@ -488,8 +493,7 @@ export default function CreateAttendancePage() {
                       return (
                         <SelectItem key={emp.id} value={emp.id}>
                           {emp.user.firstName} {emp.user.lastName} - {emp.position} (
-                          {emp.department?.name || 'N/A'})
-                          {isEnrolled ? ' ✓' : ' (Not Enrolled)'}
+                          {emp.department?.name || 'N/A'}){isEnrolled ? ' ✓' : ' (Not Enrolled)'}
                         </SelectItem>
                       );
                     })}
@@ -535,9 +539,11 @@ export default function CreateAttendancePage() {
                       This employee has a fingerprint enrolled and is ready for fingerprint-based
                       attendance recording.
                       {selectedEmployeeFingerprintStatus?.enrollmentDate && (
-                        <span className="block mt-1 text-sm">
+                        <span className="mt-1 block text-sm">
                           Enrolled on:{' '}
-                          {new Date(selectedEmployeeFingerprintStatus.enrollmentDate).toLocaleDateString()}
+                          {new Date(
+                            selectedEmployeeFingerprintStatus.enrollmentDate
+                          ).toLocaleDateString()}
                         </span>
                       )}
                     </AlertDescription>
@@ -588,7 +594,7 @@ export default function CreateAttendancePage() {
                     Date <span className="text-destructive">*</span>
                   </Label>
                   <div className="relative">
-                    <Calendar className="text-muted-foreground absolute left-3 top-3 h-4 w-4" />
+                    <Calendar className="text-muted-foreground absolute top-3 left-3 h-4 w-4" />
                     <Input
                       id="fingerprint-date"
                       type="date"
@@ -596,9 +602,7 @@ export default function CreateAttendancePage() {
                       className="pl-10"
                     />
                   </div>
-                  {errors.date && (
-                    <p className="text-destructive text-sm">{errors.date.message}</p>
-                  )}
+                  {errors.date && <p className="text-destructive text-sm">{errors.date.message}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -655,7 +659,7 @@ export default function CreateAttendancePage() {
                     <div
                       className={`relative flex h-48 w-48 flex-col items-center justify-center rounded-full border-4 transition-all ${
                         scanning
-                          ? 'border-primary animate-pulse bg-primary/10'
+                          ? 'border-primary bg-primary/10 animate-pulse'
                           : 'border-muted bg-muted'
                       }`}
                     >
@@ -741,4 +745,3 @@ export default function CreateAttendancePage() {
     </div>
   );
 }
-

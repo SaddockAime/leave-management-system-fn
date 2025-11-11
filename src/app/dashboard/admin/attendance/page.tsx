@@ -133,8 +133,7 @@ export default function AttendancePage() {
         false;
 
       const statusMatch = statusFilter === 'all' || attendance.status === statusFilter;
-      const employeeMatch =
-        employeeFilter === 'all' || attendance.employeeId === employeeFilter;
+      const employeeMatch = employeeFilter === 'all' || attendance.employeeId === employeeFilter;
 
       const dateMatch =
         (!dateFilter.start || new Date(attendance.date) >= new Date(dateFilter.start)) &&
@@ -318,7 +317,8 @@ export default function AttendancePage() {
                               {attendance.employee.user.lastName}
                             </div>
                             <div className="text-muted-foreground text-sm">
-                              {attendance.employee.position} • {attendance.employee.department?.name || 'N/A'}
+                              {attendance.employee.position} •{' '}
+                              {attendance.employee.department?.name || 'N/A'}
                             </div>
                           </div>
                         </TableCell>
@@ -403,12 +403,12 @@ export default function AttendancePage() {
                             #{startIndex + index + 1}
                           </span>
                           <h3 className="font-semibold">
-                            {attendance.employee.user.firstName}{' '}
-                            {attendance.employee.user.lastName}
+                            {attendance.employee.user.firstName} {attendance.employee.user.lastName}
                           </h3>
                         </div>
                         <p className="text-muted-foreground text-sm">
-                          {attendance.employee.position} • {attendance.employee.department?.name || 'N/A'}
+                          {attendance.employee.position} •{' '}
+                          {attendance.employee.department?.name || 'N/A'}
                         </p>
                         <div className="flex flex-wrap gap-2">
                           <Badge variant={getStatusBadgeVariant(attendance.status)}>
@@ -457,9 +457,7 @@ export default function AttendancePage() {
                           <DropdownMenuItem
                             className="cursor-pointer"
                             onClick={() =>
-                              navigation.push(
-                                `/dashboard/admin/attendance/${attendance.id}/edit`
-                              )
+                              navigation.push(`/dashboard/admin/attendance/${attendance.id}/edit`)
                             }
                           >
                             <Edit className="mr-2 h-4 w-4" />
@@ -533,4 +531,3 @@ export default function AttendancePage() {
     </div>
   );
 }
-

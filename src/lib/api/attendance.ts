@@ -54,9 +54,7 @@ export const attendanceApi = {
   },
 
   // Create attendance record
-  createAttendance: async (
-    data: CreateAttendanceRequest
-  ): Promise<ApiResponse<Attendance>> => {
+  createAttendance: async (data: CreateAttendanceRequest): Promise<ApiResponse<Attendance>> => {
     return apiClient.post<ApiResponse<Attendance>>('/attendance', data);
   },
 
@@ -69,18 +67,12 @@ export const attendanceApi = {
   },
 
   // Get attendance summary for an employee
-  getAttendanceSummary: async (
-    employeeId: string
-  ): Promise<ApiResponse<AttendanceSummary>> => {
-    return apiClient.get<ApiResponse<AttendanceSummary>>(
-      `/attendance/summary/${employeeId}`
-    );
+  getAttendanceSummary: async (employeeId: string): Promise<ApiResponse<AttendanceSummary>> => {
+    return apiClient.get<ApiResponse<AttendanceSummary>>(`/attendance/summary/${employeeId}`);
   },
 
   // Mark attendance using fingerprint (kiosk mode - auto-identify employee)
-  markAttendanceByFingerprint: async (): Promise<
-    ApiResponse<FingerprintKioskResponse>
-  > => {
+  markAttendanceByFingerprint: async (): Promise<ApiResponse<FingerprintKioskResponse>> => {
     return apiClient.post<ApiResponse<FingerprintKioskResponse>>(
       '/attendance/fingerprint-kiosk',
       {}
@@ -91,10 +83,7 @@ export const attendanceApi = {
   markAttendanceWithFingerprint: async (
     data: CreateAttendanceRequest
   ): Promise<ApiResponse<Attendance>> => {
-    return apiClient.post<ApiResponse<Attendance>>(
-      '/attendance/fingerprint',
-      data
-    );
+    return apiClient.post<ApiResponse<Attendance>>('/attendance/fingerprint', data);
   },
 
   // Enroll employee fingerprint
@@ -118,18 +107,14 @@ export const attendanceApi = {
   },
 
   // Remove employee fingerprint
-  removeFingerprint: async (
-    employeeId: string
-  ): Promise<ApiResponse<{ message: string }>> => {
+  removeFingerprint: async (employeeId: string): Promise<ApiResponse<{ message: string }>> => {
     return apiClient.delete<ApiResponse<{ message: string }>>(
       `/attendance/fingerprint/remove/${employeeId}`
     );
   },
 
   // Get fingerprint enrollment status
-  getFingerprintStatus: async (
-    employeeId?: string
-  ): Promise<ApiResponse<FingerprintStatus[]>> => {
+  getFingerprintStatus: async (employeeId?: string): Promise<ApiResponse<FingerprintStatus[]>> => {
     const queryParams = employeeId ? `?employeeId=${employeeId}` : '';
     return apiClient.get<ApiResponse<FingerprintStatus[]>>(
       `/attendance/fingerprint/status${queryParams}`
@@ -137,12 +122,7 @@ export const attendanceApi = {
   },
 
   // Get fingerprint device info
-  getFingerprintDevices: async (): Promise<
-    ApiResponse<FingerprintDeviceInfo[]>
-  > => {
-    return apiClient.get<ApiResponse<FingerprintDeviceInfo[]>>(
-      '/attendance/fingerprint/devices'
-    );
+  getFingerprintDevices: async (): Promise<ApiResponse<FingerprintDeviceInfo[]>> => {
+    return apiClient.get<ApiResponse<FingerprintDeviceInfo[]>>('/attendance/fingerprint/devices');
   },
 };
-
