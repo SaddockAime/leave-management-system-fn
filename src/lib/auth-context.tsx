@@ -178,7 +178,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsAuthenticated(false);
       setIsLoading(false);
       NProgress.start();
-      router.push('/login');
+      // Navigate to login with a hard redirect to ensure clean URL (no query params)
+      // Using window.location ensures a full page reload and clean URL
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      } else {
+        router.replace('/login');
+      }
     }
   };
 

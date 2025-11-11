@@ -1076,3 +1076,102 @@ export interface NotificationPreferences {
   leaveReminders: boolean;
   systemUpdates: boolean;
 }
+
+// ===== Attendance Types =====
+export type AttendanceStatus = 'PRESENT' | 'ABSENT' | 'HALF_DAY' | 'LEAVE';
+export type VerificationMethod = 'MANUAL' | 'FINGERPRINT' | 'PIN';
+
+export interface Attendance {
+  id: string;
+  employeeId: string;
+  employee: {
+    id: string;
+    user: {
+      firstName: string;
+      lastName: string;
+      email: string;
+      profilePicture?: string;
+    };
+    position: string;
+    department: {
+      id: string;
+      name: string;
+    };
+  };
+  date: string;
+  status: AttendanceStatus;
+  checkInTime?: string;
+  checkOutTime?: string;
+  notes?: string;
+  verifiedBy?: string;
+  verificationMethod?: VerificationMethod;
+  fingerprintTemplate?: string;
+  confidenceScore?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateAttendanceRequest {
+  employeeId: string;
+  date: string; // YYYY-MM-DD format
+  status?: AttendanceStatus;
+  checkInTime?: string; // HH:MM format
+  checkOutTime?: string; // HH:MM format
+  notes?: string;
+  fingerprintTemplate?: string;
+}
+
+export interface UpdateAttendanceRequest {
+  status?: AttendanceStatus;
+  checkInTime?: string;
+  checkOutTime?: string;
+  notes?: string;
+}
+
+export interface AttendanceSummary {
+  employeeId: string;
+  employeeName: string;
+  totalDays: number;
+  daysPresent: number;
+  daysAbsent: number;
+  daysHalfDay: number;
+  daysLeave: number;
+  attendancePercentage: number;
+  periodStart: string;
+  periodEnd: string;
+}
+
+export interface FingerprintEnrollmentResponse {
+  employeeId: string;
+  employeeName: string;
+  enrolled: boolean;
+  enrollmentDate?: string;
+  message: string;
+}
+
+export interface FingerprintStatus {
+  employeeId: string;
+  employeeName: string;
+  enrolled: boolean;
+  enrollmentDate?: string;
+}
+
+export interface FingerprintDeviceInfo {
+  id: string;
+  name: string;
+  type: string;
+  connected: boolean;
+  status: string;
+}
+
+export interface FingerprintKioskResponse {
+  attendance: Attendance;
+  employee: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+  confidence: number;
+  message: string;
+}

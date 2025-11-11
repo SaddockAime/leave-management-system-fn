@@ -23,6 +23,7 @@ import {
   Clock,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { FingerprintManagement } from '@/components/attendance/FingerprintManagement';
 
 const InfoItem = ({
   icon: Icon,
@@ -182,7 +183,7 @@ export default function EmployeeViewPage() {
 
       {/* Tabs Section */}
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-3">
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
           <TabsTrigger value="overview" className="cursor-pointer">
             Overview
           </TabsTrigger>
@@ -191,6 +192,9 @@ export default function EmployeeViewPage() {
           </TabsTrigger>
           <TabsTrigger value="reporting" className="cursor-pointer">
             Reporting Structure
+          </TabsTrigger>
+          <TabsTrigger value="fingerprint" className="cursor-pointer">
+            Fingerprint
           </TabsTrigger>
         </TabsList>
 
@@ -370,6 +374,14 @@ export default function EmployeeViewPage() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        {/* Fingerprint Management Tab */}
+        <TabsContent value="fingerprint" className="space-y-6">
+          <FingerprintManagement
+            employeeId={employee.id}
+            employeeName={`${employee.user.firstName} ${employee.user.lastName}`}
+          />
         </TabsContent>
       </Tabs>
     </div>

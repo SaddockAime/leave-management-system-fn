@@ -16,6 +16,8 @@ import {
   UserCog,
   Bell,
   Tag,
+  Clock,
+  Fingerprint,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -26,6 +28,12 @@ const navigation = [
   { name: 'Departments', href: '/dashboard/admin/departments', icon: Building2 },
   { name: 'Leave Types', href: '/dashboard/admin/leave-types', icon: Tag },
   { name: 'Leave Requests', href: '/dashboard/admin/leave-requests', icon: Calendar },
+  { name: 'Attendance', href: '/dashboard/admin/attendance', icon: Clock },
+  {
+    name: 'Fingerprint Management',
+    href: '/dashboard/admin/attendance/fingerprints',
+    icon: Fingerprint,
+  },
   { name: 'Recruitment', href: '/dashboard/admin/recruitment', icon: UserPlus },
   { name: 'Onboarding', href: '/dashboard/admin/onboarding', icon: Briefcase },
   { name: 'Compensation', href: '/dashboard/admin/compensation', icon: DollarSign },
@@ -79,9 +87,37 @@ export function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProps) {
         {/* Navigation */}
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
           {navigation.map((item) => {
+            // Check for exact match first
+            if (pathname === item.href) {
+              return (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className={cn(
+                    'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                    'bg-primary text-primary-foreground'
+                  )}
+                >
+                  <item.icon className="h-4 w-4 flex-shrink-0" />
+                  {!isCollapsed && <span className="whitespace-nowrap">{item.name}</span>}
+                </Link>
+              );
+            }
+
+            // For child paths, check if current path starts with this href
+            // But exclude parent paths when we're on a more specific child
             const isActive =
-              pathname === item.href ||
-              (item.href !== '/dashboard/admin' && pathname.startsWith(item.href + '/'));
+              item.href !== '/dashboard/admin' &&
+              pathname.startsWith(item.href + '/') &&
+              // Make sure we don't highlight parent when on a more specific child
+              // by checking if there's a more specific match in navigation
+              !navigation.some(
+                (otherItem) =>
+                  otherItem.href !== item.href &&
+                  otherItem.href.startsWith(item.href + '/') &&
+                  pathname.startsWith(otherItem.href)
+              );
+
             return (
               <Link
                 key={item.name}

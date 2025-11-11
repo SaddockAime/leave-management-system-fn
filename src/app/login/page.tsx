@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Loader2 } from 'lucide-react';
@@ -29,10 +29,37 @@ function LoginForm() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email: '',
+      password: '',
+    },
   });
+
+  // Clear form and URL params when component mounts (e.g., after logout)
+  useEffect(() => {
+    reset({
+      email: '',
+      password: '',
+    });
+    setError(null);
+    setShowPassword(false);
+    
+    // Always clear redirect parameter from URL when login page loads
+    // This ensures clean URL after logout
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (url.searchParams.has('redirect')) {
+        // Remove redirect parameter and update URL
+        url.searchParams.delete('redirect');
+        const cleanUrl = url.pathname + (url.search ? url.search : '');
+        window.history.replaceState({}, '', cleanUrl || '/login');
+      }
+    }
+  }, [reset]);
 
   const onSubmit = async (data: LoginFormData) => {
     setError(null);

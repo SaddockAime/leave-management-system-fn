@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Eye, EyeOff, Loader2, CheckCircle2 } from 'lucide-react';
@@ -28,10 +28,30 @@ export default function RegisterPage() {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+    },
   });
+
+  // Clear form when component mounts
+  useEffect(() => {
+    reset({
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+    });
+    setError(null);
+    setShowPassword(false);
+    setSuccess(false);
+  }, [reset]);
 
   const onSubmit = async (data: RegisterFormData) => {
     setError(null);
