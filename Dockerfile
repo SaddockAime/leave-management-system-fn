@@ -1,48 +1,39 @@
 # syntax = docker/dockerfile:1
 
-# Adjust NODE_VERSION as desired
 ARG NODE_VERSION=22.13.1
-FROM node:${NODE_VERSION}-slim AS base
+
+# ─── Base ────────────────────────────────────────────────────────────────────
+FROM node:${NODE_VERSION}-alpine AS base
+WORKDIR /app
+ENV NODE_ENV=production
+
+# ─── Build stage ─────────────────────────────────────────────────────────────
+FROM base AS build
+
+RUN apk add --no-cache libc6-compat
+
+COPY package.json package-lock.json ./
+RUN npm ci --include=dev
+
+COPY . .
+RUN npx next build
+
+# ─── Final image ─────────────────────────────────────────────────────────────
+FROM base AS runner
 
 LABEL andasy_launch_runtime="Next.js"
 
-# Next.js app lives here
-WORKDIR /app
+RUN addgroup --system --gid 1001 nodejs \
+ && adduser --system --uid 1001 nextjs
 
-# Set production environment
-ENV NODE_ENV="production"
+COPY --from=build --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=build --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=build --chown=nextjs:nodejs /app/public ./public
 
+USER nextjs
 
-# Throw-away build stage to reduce size of final image
-FROM base AS build
-
-# Install packages needed to build node modules
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential node-gyp pkg-config python-is-python3
-
-# Install node modules
-COPY package-lock.json package.json ./
-RUN npm ci --include=dev
-
-# Copy application code
-COPY . .
-
-# Build application
-RUN npx next build --experimental-build-mode compile
-
-# Remove development dependencies
-RUN npm prune --omit=dev
-
-
-# Final stage for app image
-FROM base
-
-# Copy built application
-COPY --from=build /app /app
-
-# Entrypoint sets up the container.
-ENTRYPOINT [ "/app/docker-entrypoint.js" ]
-
-# Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD [ "npm", "run", "start" ]
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+CMD ["node", "server.js"]
