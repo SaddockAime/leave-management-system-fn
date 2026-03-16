@@ -1,4 +1,4 @@
-# andasy.hcl app configuration file generated for hr-employees-management-fn on Thursday, 05-Mar-26 12:03:54 SAST
+# andasy.hcl app configuration file generated for hr-employees-management-fn on Monday, 16-Mar-26 15:14:37 SAST
 #
 # See https://github.com/quarksgroup/andasy-cli for information about how to use this file.
 
@@ -11,6 +11,8 @@ app {
   }
 
   port = 3000
+
+  primary_region = "fsn"
 
   compute {
     cpu      = 1
