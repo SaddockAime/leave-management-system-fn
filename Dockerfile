@@ -16,6 +16,9 @@ COPY package.json package-lock.json ./
 RUN npm ci --include=dev
 
 COPY . .
+
+ENV NEXT_PUBLIC_API_URL=https://hr-employees-management-bn.andasy.dev/api
+
 RUN npx next build
 
 # ─── Final image ─────────────────────────────────────────────────────────────

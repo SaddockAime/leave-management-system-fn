@@ -59,7 +59,7 @@ export function SocketProvider({ children }: { children: ReactNode }) {
 
     // Initialize socket connection
     const socketInstance = io(
-      process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:4000',
+      process.env.NEXT_PUBLIC_API_URL?.replace('/api', ''),
       {
         auth: {
           token: currentToken,
